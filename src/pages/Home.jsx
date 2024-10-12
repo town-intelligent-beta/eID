@@ -1,17 +1,11 @@
-import Logo from "../assets/eID-logo.png";
 import sixDegree from "../assets/six-degree.png";
 import E_SDG_logo from "../assets/E_SDG_logo.png";
 import UPR_info from "../assets/UPR-info.png";
 
 export default function Home() {
   return (
-    <div className="mx-auto border-main border-8 w-full">
+    <div>
       <div className="">
-        <nav className="navbar navbar-light bg-white">
-          <a className="navbar-brand" href="/index.html">
-            <img className="mt-3 w-12" src={Logo} />
-          </a>
-        </nav>
         <div className="w-4/5 mx-auto">
           <div className="mt-2 text-center">
             <img src={sixDegree} className="img-fluid" />
@@ -34,13 +28,13 @@ export default function Home() {
             </p>
           </div>
           <div className="mt-3 text-center">
-            <img src={E_SDG_logo} className="img-fluid" />
-            <img src={UPR_info} className="img-fluid" />
+            <img src={E_SDG_logo} className="" />
+            <img src={UPR_info} className="" />
           </div>
-          <div className="d-flex mt-5 mb-3 justify-content-center">
+          <div className="d-flex mt-5 mb-3 justify-content-center ">
             <a
-              className="btn-lg btn-primary rounded-0"
-              href="/accounts/signin.html"
+              className="rounded-2 bg-home_button p-4 text-white no-underline hover:underline"
+              href="/accounts/signin"
               role="button"
             >
               成為數位鎮民
