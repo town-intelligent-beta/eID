@@ -2,7 +2,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Nav from "./pages/components/Nav";
 import Home from "./pages/Home";
-import Signin from "./pages/Signin";
+import Signin from "./pages/accounts/Signin";
+import SignUp from "./pages/accounts/SignUp";
+import Eid from "./pages/eid";
 
 function App() {
   return (
@@ -12,6 +14,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/accounts/signin" element={<Signin />} />
+          <Route path="/accounts/signup" element={<SignUp />} />
+          <Route path="/eid" element={<Eid />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>

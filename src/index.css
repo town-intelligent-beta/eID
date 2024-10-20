@@ -69,3 +69,12 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 } */
+.custom-nav-link {
+  background-color: white;
+  color: black;
+}
+
+.custom-nav-link.active {
+  background-color: #E5E5E599; /* Active background color */
+  color: black; /* Active text color */
+}

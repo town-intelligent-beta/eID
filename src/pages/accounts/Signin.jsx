@@ -1,8 +1,12 @@
-import googleLogo from "../assets/google-color-svgrepo-com.svg";
-import warning from "../assets/warning-icon.svg";
+import { useRef } from "react";
+import googleLogo from "../../assets/google-color-svgrepo-com.svg";
+import warning from "../../assets/warning-icon.svg";
 import Button from "react-bootstrap/Button";
 
 export default function Signin() {
+  const emailRef = useRef();
+  const passwordRef = useRef();
+
   return (
     <div className="min-vh-100">
       <form>
@@ -15,6 +19,10 @@ export default function Signin() {
                 id="email"
                 aria-describedby="emailHelp"
                 placeholder="電子郵件"
+                value={emailRef.current}
+                onChange={(e) => {
+                  emailRef.current = e.target.value;
+                }}
               />
             </div>
             <div className="form-group mb-0">
@@ -23,6 +31,10 @@ export default function Signin() {
                 className="rounded-xl w-full h-10 px-3"
                 id="password"
                 placeholder="密碼"
+                value={passwordRef.current}
+                onChange={(e) => {
+                  passwordRef.current = e.target.value;
+                }}
               />
             </div>
             <p className="mb-0">
