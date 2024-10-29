@@ -2,16 +2,19 @@ import { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import LogOut from "../../assets/outline_logout_black_24dp.png";
+import LogOut from "../../assets/logout.png";
+import back from "../../assets/back.png";
 import user from "../../assets/pages/user.png";
 import { useNavigate } from "react-router-dom";
 import { verifyToken } from "../../utils/Auth";
+import { useDropzone } from "react-dropzone";
 
 const EditInfo = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [avatarImg, setAvatarImg] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   function logout() {
@@ -34,49 +37,132 @@ const EditInfo = () => {
     setAvatarImg(`${import.meta.env.VITE_HOST_URL_EID}/${avatarImg}`);
   }, []);
 
-  async function uploadAvatarImg(base64Img) {
+  //修改使用者名稱
+  const modifyUsername = async (username) => {
     const dataJSON = {
-      email: localStorage.getItem("email"),
-      img: base64Img,
+      email: email,
+      username: username,
     };
-
-    const response = await fetch(`/api/accounts/modify`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dataJSON),
+    const formBody = new URLSearchParams();
+    Object.keys(dataJSON).forEach((key) => {
+      formBody.append(key, dataJSON[key]);
     });
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const resultJSON = await response.json();
-    return resultJSON;
-  }
-
-  const uploadAvatarImage = async () => {
-    setLoading(true);
     try {
-      await uploadImageFile(427, null, "avatar_img", true);
-      const coverImg = document
-        .getElementById("avatar_img")
-        .style.backgroundImage.replace('url("', "")
-        .replace('")', "");
-      const resultJSON = await uploadAvatarImg(coverImg);
-      if (resultJSON.result) {
-        alert("更新成功");
-        window.location.replace("/eid.html");
-      } else {
-        alert("更新失敗，請洽系統管理員。");
+      const response = await fetch(`/api/accounts/modify`, {
+        method: "POST",
+        headers: {
+          //"Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formBody,
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
+
+      const resultJSON = await response.json();
+      //setResult(resultJSON);
+      return resultJSON;
     } catch (error) {
-      console.error("Error uploading avatar image:", error);
-      alert("更新失敗，請洽系統管理員。");
-    } finally {
-      setLoading(false);
+      console.error("Error modifying username:", error);
+      setError(error);
+      return null;
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const result = await modifyUsername(username);
+    if (result) {
+      console.log("Username modified successfully:", result);
+      localStorage.setItem("username", username);
+      alert("修改成功");
+      // 處理修改成功的邏輯
+    } else {
+      console.error("Failed to modify username");
+      alert("修改失敗，請洽系統管理員。");
+      // 處理修改失敗的邏輯
+    }
+  };
+
+  //變更圖片
+  const uploadAvatarImg = async (base64Img) => {
+    try {
+      const dataJSON = {
+        email: email,
+        img: base64Img,
+      };
+
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_URL_EID}/accounts/modify`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataJSON),
+          mode: "cors",
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Avatar upload failed");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Avatar upload error:", error);
+      throw error;
+    }
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: async (acceptedFiles) => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const file = acceptedFiles[0];
+        const base64 = await convertToBase64(file);
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          setAvatarImg(reader.result);
+        };
+
+        reader.readAsDataURL(file);
+        const resultJSON = await uploadAvatarImg(base64);
+
+        if (resultJSON.result) {
+          alert("更新成功");
+          navigate("/eid");
+        } else {
+          alert("更新失敗，請洽系統管理員。");
+        }
+      } catch (error) {
+        setError("上傳頭像失敗，請重試");
+        console.error("Avatar upload error:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+  });
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
   };
 
   return (
@@ -92,7 +178,7 @@ const EditInfo = () => {
         </div>
       )}
 
-      <div className="h-screen">
+      <>
         <div className="row">
           <div className="col">
             <div className="container">
@@ -122,7 +208,11 @@ const EditInfo = () => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                       />
-                      <Button variant="primary" id="button-addon2">
+                      <Button
+                        variant="primary"
+                        id="button-addon2"
+                        onClick={handleSubmit}
+                      >
                         確認
                       </Button>
                     </InputGroup>
@@ -184,13 +274,30 @@ const EditInfo = () => {
                     </div> */}
                   </div>
 
-                  <div className="flex">
+                  <div className="flex gap-4">
                     <button
                       className="bg-light w-full flex items-center justify-center p-2 rounded-lg"
                       onClick={logout}
                     >
-                      <img src={LogOut} className="pb-1 mr-2" alt="Logout" />
+                      <img
+                        src={LogOut}
+                        className="pb-1 mr-2"
+                        alt="Logout"
+                        width={30}
+                      />
                       登出
+                    </button>
+                    <button
+                      className="bg-light w-full flex items-center justify-center p-2 rounded-lg"
+                      onClick={() => navigate("/eid")}
+                    >
+                      <img
+                        src={back}
+                        className="pb-1 mr-2"
+                        alt="Logout"
+                        width={30}
+                      />
+                      返回
                     </button>
                   </div>
                 </div>
@@ -200,8 +307,10 @@ const EditInfo = () => {
                       id="btn_avatar_img"
                       className="border-1"
                       style={{ border: "solid 2px #fff38d", cursor: "pointer" }}
+                      {...getRootProps()}
                       //onClick={uploadAvatarImage}
                     >
+                      <input {...getInputProps()} />
                       <div
                         id="avatar_img"
                         className="bg-center rounded-lg"
@@ -209,6 +318,7 @@ const EditInfo = () => {
                           backgroundImage: `url(${avatarImg || user})`,
                           height: "170px",
                           backgroundRepeat: "no-repeat",
+                          backgroundSize: "contain",
                         }}
                       ></div>
                     </div>
@@ -218,7 +328,7 @@ const EditInfo = () => {
             </div>
           </div>
         </div>
-      </div>
+      </>
     </>
   );
 };

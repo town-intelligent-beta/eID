@@ -91,7 +91,7 @@ export default function Signin() {
   };
 
   return (
-    <div className="min-vh-100">
+    <>
       <form>
         <div className="row justify-content-center">
           <div className="col-7 bg-gray shadow-sm rounded-xl py-2 mb-2 flex flex-col">
@@ -188,6 +188,6 @@ export default function Signin() {
           </button>
         </div>
       </form>
-    </div>
+    </>
   );
 }

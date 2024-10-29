@@ -16,7 +16,7 @@ export default function Eid() {
   };
 
   return (
-    <div className="min-h-screen">
+    <>
       <div className="flex flex-wrap">
         <div className="w-full ml-10">
           <Tab.Container
@@ -64,6 +64,6 @@ export default function Eid() {
           </Tab.Container>
         </div>
       </div>
-    </div>
+    </>
   );
 }

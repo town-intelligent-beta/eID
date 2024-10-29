@@ -6,6 +6,7 @@ export default {
       main: "#FFF38D",
       home_button: "#5285DF",
       gray: "#E5E5E580",
+      red: "#FF0000",
     },
   },
   plugins: [],

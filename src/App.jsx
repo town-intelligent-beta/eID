@@ -7,16 +7,19 @@ import Signin from "./pages/accounts/Signin";
 import SignUp from "./pages/accounts/SignUp";
 import Eid from "./pages/eid";
 import EditInfo from "./pages/backend/Edit-info";
+import ChangePassword from "./pages/backend/Change-pw";
+import ForgetPw from "./pages/accounts/Forget-pw";
 
 function App() {
   return (
-    <div className="mx-auto border-main border-8 w-full">
+    <div className="mx-auto border-main border-8 w-full min-h-screen">
       <BrowserRouter>
         <Nav />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/accounts/signin" element={<Signin />} />
           <Route path="/accounts/signup" element={<SignUp />} />
+          <Route path="/accounts/forget-pw" element={<ForgetPw />} />
           <Route
             path="/eid"
             element={
@@ -30,6 +33,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditInfo />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/backend/change-pw"
+            element={
+              <ProtectedRoute>
+                <ChangePassword />
               </ProtectedRoute>
             }
           />
