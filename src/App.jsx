@@ -5,7 +5,7 @@ import Nav from "./pages/components/Nav";
 import Home from "./pages/Home";
 import Signin from "./pages/accounts/Signin";
 import SignUp from "./pages/accounts/SignUp";
-import Eid from "./pages/eid";
+import Eid from "./pages/Eid";
 import EditInfo from "./pages/backend/Edit-info";
 import ChangePassword from "./pages/backend/Change-pw";
 import ForgetPw from "./pages/accounts/Forget-pw";
