@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import LogOut from "../../assets/logout.png";
+import LogOut from "../../assets/Logout.png";
 import back from "../../assets/back.png";
 import user from "../../assets/pages/user.png";
 import { useNavigate } from "react-router-dom";
