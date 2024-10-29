@@ -6,9 +6,9 @@ export default function Home() {
   return (
     <div>
       <div className="">
-        <div className="w-4/5 mx-auto">
+        <div className="w-4/5 mx-auto max-w-5xl">
           <div className="mt-2 text-center">
-            <img src={sixDegree} className="img-fluid" />
+            <img src={sixDegree} className="max-w-full mx-auto" />
           </div>
           <div className="mt-3 flex flex-col gap-3">
             <p>
@@ -28,8 +28,8 @@ export default function Home() {
             </p>
           </div>
           <div className="mt-3 text-center">
-            <img src={E_SDG_logo} className="" />
-            <img src={UPR_info} className="" />
+            <img src={E_SDG_logo} className="max-w-full mx-auto" />
+            <img src={UPR_info} className="max-w-full mx-auto" />
           </div>
           <div className="d-flex mt-5 mb-3 justify-content-center ">
             <a
