@@ -1,5 +1,11 @@
 //import { useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  HashRouter,
+} from "react-router-dom";
 import ProtectedRoute from "./utils/ProtectRoute";
 import Nav from "./pages/components/Nav";
 import Home from "./pages/Home";
@@ -9,6 +15,8 @@ import Eid from "./pages/Eid";
 import EditInfo from "./pages/backend/Edit-info";
 import ChangePassword from "./pages/backend/Change-pw";
 import ForgetPw from "./pages/accounts/Forget-pw";
+import Wallet from "./pages/Tabs/Wallet";
+import About from "./pages/Tabs/About";
 
 function App() {
   return (
@@ -27,7 +35,10 @@ function App() {
                 <Eid />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route path="about" element={<About />} />
+            <Route path="wallet" element={<Wallet />} />
+          </Route>
           <Route
             path="/backend/edit-info"
             element={

@@ -1,13 +1,12 @@
-import { Tab, Row, Nav } from "react-bootstrap";
-import About from "./Tabs.jsx/About";
-import { useState } from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 export default function Eid() {
-  const [activeKey, setActiveKey] = useState("about");
+  const location = useLocation();
+  const activeKey = location.pathname.split("/").pop();
 
-  const handleSelect = (key) => {
-    setActiveKey(key);
-  };
+  // const handleSelect = (key) => {
+  //   setActiveKey(key);
+  // };
 
   const getLinkStyle = (key) => {
     return activeKey === key
@@ -16,54 +15,42 @@ export default function Eid() {
   };
 
   return (
-    <>
-      <div className="flex flex-wrap">
-        <div className="w-full ml-10">
-          <Tab.Container
-            id="left-tabs-example"
-            defaultActiveKey="about"
-            onSelect={handleSelect}
+    <div className="flex flex-wrap">
+      <div className="w-11/12 mx-auto">
+        <div className="flex gap-2">
+          <Link
+            to="/eid/about"
+            style={getLinkStyle("about")}
+            className="no-underline p-2 rounded-lg"
           >
-            <Row>
-              <Nav variant="pills" className="flex">
-                <Nav.Item>
-                  <Nav.Link eventKey="about" style={getLinkStyle("about")}>
-                    關於
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="issue" style={getLinkStyle("issue")}>
-                    永續合作
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link
-                    eventKey="foot_print"
-                    style={getLinkStyle("foot_print")}
-                  >
-                    數位足跡
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="wallet" style={getLinkStyle("wallet")}>
-                    領取任務
-                  </Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </Row>
-            <Row>
-              <Tab.Content>
-                <Tab.Pane eventKey="about">
-                  <About />
-                </Tab.Pane>
-                <Tab.Pane eventKey="issue"></Tab.Pane>
-                <Tab.Pane eventKey="foot_print"></Tab.Pane>
-                <Tab.Pane eventKey="wallet"></Tab.Pane>
-              </Tab.Content>
-            </Row>
-          </Tab.Container>
+            關於
+          </Link>
+          <Link
+            to="/eid/issue"
+            style={getLinkStyle("issue")}
+            className="no-underline p-2 rounded-lg"
+          >
+            永續合作
+          </Link>
+          <Link
+            to="/eid/foot_print"
+            style={getLinkStyle("foot_print")}
+            className="no-underline p-2 rounded-lg"
+          >
+            數位足跡
+          </Link>
+          <Link
+            to="/eid/wallet"
+            style={getLinkStyle("wallet")}
+            className="no-underline p-2 rounded-lg"
+          >
+            領取任務
+          </Link>
+        </div>
+        <div>
+          <Outlet />
         </div>
       </div>
-    </>
+    </div>
   );
 }

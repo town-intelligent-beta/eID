@@ -94,7 +94,7 @@ export default function Signin() {
         localStorage.setItem("username", result.username);
         localStorage.setItem("email", email);
         await fetchAvatarImg();
-        navigate("/eid");
+        navigate("/eid/about");
       }
     } catch (error) {
       // 錯誤已經在 signin 函數中處理
