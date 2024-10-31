@@ -29,6 +29,7 @@ export default function Signin() {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: dataJSON,
+        //body: formData,
         mode: "cors", // 明確指定 CORS 模式
         credentials: "include", // Handles CORS if needed
       });

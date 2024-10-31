@@ -1,13 +1,18 @@
 // 通用的 API 請求函數
 const makeRequest = async (url, method, data = null) => {
   try {
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+
+    const body = data ? new URLSearchParams(data).toString() : null;
+
     const response = await fetch(url, {
       method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: data ? JSON.stringify(data) : undefined,
+      headers,
+      body,
       credentials: "include", // 如果需要發送 cookies
+      mode: "cors", // 明確指定 CORS 模式
     });
 
     if (!response.ok) {
@@ -25,7 +30,7 @@ const makeRequest = async (url, method, data = null) => {
 // 獲取用戶任務列表
 export const getUserUuidTasks = async (email) => {
   const data = {
-    email,
+    email: email,
     task_type: "0",
   };
 
@@ -55,19 +60,19 @@ export const getParentTask = async (uuid) => {
 export const getTaskStatus = async (uuid) => {
   const email = localStorage.getItem("email"); // 假設使用 localStorage
   const data = {
-    uuid,
-    email,
+    uuid: uuid,
+    email: email,
   };
 
-  return await makeRequest(`api/tasks/get_task_status`, "POST", data);
+  return await makeRequest(`/api/tasks/get_task_status`, "POST", data);
 };
 
 // 計算進度
 export const calculateProgress = async (uuid) => {
   const email = localStorage.getItem("email");
   const data = {
-    uuid,
-    email,
+    uuid: uuid,
+    email: email,
   };
 
   return await makeRequest(`/api/tasks/cal_progress`, "POST", data);
@@ -77,7 +82,7 @@ export const calculateProgress = async (uuid) => {
 export const taskSave = async (objTask) => {
   const email = localStorage.getItem("email");
   const data = {
-    email,
+    email: email,
     uuid: objTask.uuid,
   };
 
