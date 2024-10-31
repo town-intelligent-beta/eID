@@ -1,11 +1,5 @@
 //import { useState } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  HashRouter,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./utils/ProtectRoute";
 import Nav from "./pages/components/Nav";
 import Home from "./pages/Home";
