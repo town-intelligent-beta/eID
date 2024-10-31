@@ -39,31 +39,24 @@ const EditInfo = () => {
 
   //修改使用者名稱
   const modifyUsername = async (username) => {
-    const dataJSON = {
-      email: email,
-      username: username,
-    };
-    const formBody = new URLSearchParams();
-    Object.keys(dataJSON).forEach((key) => {
-      formBody.append(key, dataJSON[key]);
-    });
+    const formBody = new FormData();
+    formBody.append("email", email);
+    formBody.append("username", username);
 
     try {
-      const response = await fetch(`/api/accounts/modify`, {
-        method: "POST",
-        headers: {
-          //"Content-Type": "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formBody,
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_URL_EID}/accounts/modify`,
+        {
+          method: "POST",
+          body: formBody,
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
 
       const resultJSON = await response.json();
-      //setResult(resultJSON);
       return resultJSON;
     } catch (error) {
       console.error("Error modifying username:", error);
@@ -90,20 +83,15 @@ const EditInfo = () => {
   //變更圖片
   const uploadAvatarImg = async (base64Img) => {
     try {
-      const dataJSON = {
-        email: email,
-        img: base64Img,
-      };
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("img", base64Img);
 
       const response = await fetch(
         `${import.meta.env.VITE_HOST_URL_EID}/accounts/modify`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dataJSON),
-          mode: "cors",
+          body: formData,
           credentials: "include",
         }
       );

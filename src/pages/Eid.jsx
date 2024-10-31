@@ -4,10 +4,6 @@ export default function Eid() {
   const location = useLocation();
   const activeKey = location.pathname.split("/").pop();
 
-  // const handleSelect = (key) => {
-  //   setActiveKey(key);
-  // };
-
   const getLinkStyle = (key) => {
     return activeKey === key
       ? { backgroundColor: "#E5E5E599", color: "#000000" } // Active styles
