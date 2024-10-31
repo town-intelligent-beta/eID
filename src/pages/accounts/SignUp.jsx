@@ -14,12 +14,6 @@ export default function Signin() {
   const [result, setResult] = useState(null);
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    username: username,
-    email: email,
-    password: password,
-  });
-
   const handleCfmPasswordChange = (e) => {
     const value = e.target.value;
     setCfmPassword(value);
@@ -35,27 +29,20 @@ export default function Signin() {
     setPasswordShowIcon(value.length < 8);
   };
 
-  const signup = async (dataJSON) => {
+  const signup = async (formdata) => {
     try {
       if (password !== cfmPassword) {
         throw new Error("Password and Confirm Password are not the same");
       }
 
-      const formBody = new URLSearchParams();
-      Object.keys(dataJSON).forEach((key) => {
-        formBody.append(key, dataJSON[key]);
-      });
-
-      const response = await fetch(`/api/accounts/signup`, {
-        method: "POST",
-        headers: {
-          //'Content-Type': 'application/json',
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formBody,
-        mode: "cors", // 明確指定 CORS 模式
-        credentials: "include", // Handles CORS if needed
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_URL_EID}/accounts/signup`,
+        {
+          method: "POST",
+          body: formdata,
+          credentials: "include", // Handles CORS if needed
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -74,7 +61,13 @@ export default function Signin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await signup(formData);
+
+    const formBody = new FormData();
+    formBody.append("username", username);
+    formBody.append("email", email);
+    formBody.append("password", password);
+
+    const result = await signup(formBody);
     if (result) {
       console.log("Signup successful:", result);
       localStorage.setItem("username", result.username);
