@@ -10,28 +10,21 @@ export default function Signin() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [formData, setFormData] = useState({
-    email: email,
-    password: password,
-  });
 
   const fetchAvatarImg = async () => {
     const email = localStorage.getItem("email");
-    //const dataJSON = { email };
-    const dataJSON = new URLSearchParams();
+    const dataJSON = new FormData();
     dataJSON.append("email", email);
 
     try {
-      const response = await fetch(`/api/accounts/get_avatar_img`, {
-        method: "POST",
-        headers: {
-          //"Content-Type": "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: dataJSON,
-        mode: "cors", // 明確指定 CORS 模式
-        credentials: "include", // Handles CORS if needed
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_URL_EID}/accounts/get_avatar_img`,
+        {
+          method: "POST",
+          body: dataJSON,
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -45,27 +38,19 @@ export default function Signin() {
     }
   };
 
-  const signin = async (credentials) => {
+  const signin = async (formdata) => {
     setIsLoading(true);
     setError("");
 
     try {
-      const formBody = new URLSearchParams();
-      Object.keys(credentials).forEach((key) => {
-        formBody.append(key, credentials[key]);
-      });
-
-      const response = await fetch(`/api/accounts/signin`, {
-        method: "POST",
-        headers: {
-          // "Content-Type": "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        //body: JSON.stringify(credentials),
-        body: formBody,
-        mode: "cors", // 明確指定 CORS 模式
-        credentials: "include", // Handles CORS if needed
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_URL_EID}/accounts/signin`,
+        {
+          method: "POST",
+          body: formdata,
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("登入失敗");
@@ -86,6 +71,9 @@ export default function Signin() {
     e.preventDefault();
 
     try {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
       const result = await signin(formData);
 
       // 假設登入成功後的處理，例如儲存 token 等
@@ -105,20 +93,16 @@ export default function Signin() {
   useEffect(() => {
     // Initialize Google API
     const initGoogleClient = () => {
-      window.gapi.load(
-        "client",
-        () => {
-          window.gapi.client.init({
-            clientId:
-              "1080674192413-b1vnqslm4gif3p9ntaj4ifl4i572p0bn.apps.googleusercontent.com",
-            scope: "profile",
-            discoveryDocs: [
-              "https://www.googleapis.com/discovery/v1/apis/people/v1/rest",
-            ],
-          });
-        },
-        []
-      );
+      window.gapi.load("client:auth2", () => {
+        window.gapi.client.init({
+          clientId:
+            "1080674192413-b1vnqslm4gif3p9ntaj4ifl4i572p0bn.apps.googleusercontent.com",
+          scope: "profile",
+          discoveryDocs: [
+            "https://www.googleapis.com/discovery/v1/apis/people/v1/rest",
+          ],
+        });
+      });
     };
 
     // Load Google API Script
@@ -133,18 +117,19 @@ export default function Signin() {
   }, []);
 
   const handleEidGoogleLogin = async (idToken, res) => {
+    const formData = new FormData();
+    formData.append("email", res.result.emailAddresses[0].value);
+    formData.append("username", res.result.names[0].displayName);
+    formData.append("token", idToken);
+
     try {
-      const response = await fetch(`api/accounts/oauth/google`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: res.result.emailAddresses[0].value,
-          username: res.result.names[0].displayName,
-          token: idToken,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_URL_EID}/accounts/oauth/google`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -178,7 +163,7 @@ export default function Signin() {
       try {
         localStorage.setItem("jwt", resultJSON.token);
         localStorage.setItem("username", resultJSON.username);
-        //localStorage.setItem("email", result.emailAddresses[0].value);
+        localStorage.setItem("email", resultJSON.emailAddresses[0].value);
         navigate("/eid");
       } catch (e) {
         alert("登入失敗，請洽系統管理員！");
@@ -205,10 +190,6 @@ export default function Signin() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setFormData({
-                    ...formData,
-                    email: e.target.value,
-                  });
                 }}
               />
             </div>
@@ -222,10 +203,6 @@ export default function Signin() {
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  setFormData({
-                    ...formData,
-                    password: e.target.value,
-                  });
                 }}
               />
             </div>
@@ -238,7 +215,7 @@ export default function Signin() {
                     alt="Warning"
                   />
                   您輸入的帳號密碼錯誤，請再次確認。
-                  <a href="/accounts/forget-pw.html" className="text-danger">
+                  <a href="/accounts/forget-pw" className="text-danger">
                     <u>忘記密碼？</u>
                   </a>
                 </small>
@@ -284,10 +261,6 @@ export default function Signin() {
             </div>
           </div>
           <div className="flex justify-center">
-            {/* <a
-              className="btn btn-block btn-outline-secondary p-2"
-              id="btnSignIn"
-            > */}
             <Button
               variant="outline-secondary"
               className="p-2"
@@ -298,8 +271,6 @@ export default function Signin() {
                 <small className="text-dark">透過 Google 登入</small>
               </div>
             </Button>
-
-            {/* </a> */}
           </div>
         </div>
       </div>
