@@ -2,18 +2,22 @@
 const makeRequest = async (url, method, data = null) => {
   try {
     const headers = {
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/json",
     };
 
-    const body = data ? new URLSearchParams(data).toString() : null;
-
-    const response = await fetch(url, {
+    // GET 请求不應包含 body
+    const config = {
       method,
       headers,
-      body,
-      credentials: "include", // 如果需要發送 cookies
-      mode: "cors", // 明確指定 CORS 模式
-    });
+      credentials: "include", // 確保帶上 cookies
+      mode: "cors",
+    };
+
+    if (method !== "GET" && data) {
+      config.body = JSON.stringify(data); // POST/PUT等請求包含body
+    }
+
+    const response = await fetch(url, config);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

@@ -7,7 +7,17 @@ import {
 } from "../../utils/Task";
 
 export default function Issue() {
-  const [issues, setIssues] = useState([]);
+  // const [issues, setIssues] = useState([]);
+
+  const [issues, setIssues] = useState([
+    {
+      uuid: "91661248",
+      email: "s889951234@gmail.com",
+      thumbnail:
+        "https://beta-tplanet-backend.4impact.cc/static/project/22381600/tasks/20684066/cover.png",
+      gps: true,
+    },
+  ]);
 
   function updateTicket(uuidTarget, objTarget) {
     localStorage.setItem(uuidTarget, JSON.stringify(objTarget));
@@ -21,8 +31,12 @@ export default function Issue() {
     console.log("getTaskInfo", reqUuidTask);
     //const resultJSON = await getTaskDescription(reqUuidTask);
     const getTaskDescription = async (uuid) => {
+      console.log(
+        "API url",
+        `${import.meta.env.VITE_HOST_URL_EID}/tasks/get/${uuid}`
+      );
       const response = await fetch(
-        `${import.meta.env.VITE_HOST_URL_EID}/tasks/get/20684066`,
+        `${import.meta.env.VITE_HOST_URL_EID}/tasks/get/${uuid}`,
         {
           method: "GET",
           credentials: "include",
@@ -98,11 +112,17 @@ export default function Issue() {
     }
   };
 
-  useEffect(() => {
+  /*   useEffect(() => {
     const email = localStorage.getItem("email");
     if (email) {
       listIssues(email);
     }
+  }, []); */
+
+  useEffect(() => {
+    // 直接調用 API，假設你已知的任務 UUID
+    const reqUuidTask = "20684066"; // 替換為實際的 UUID
+    getTaskInfo(reqUuidTask);
   }, []);
 
   const checkTaskVerified = async (uuid) => {
@@ -132,6 +152,8 @@ export default function Issue() {
   function overlayOnTask(img, objParent) {
     return <div className="watermark">{img}</div>;
   }
+
+  console.log("Rendering Issue component...");
 
   return (
     <>
