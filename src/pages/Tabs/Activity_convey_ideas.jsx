@@ -26,7 +26,7 @@ const getSdgsIndexes = (task) => {
 };
 
 const TaskCard = ({ task }) => {
-  const taskUrl = `/tasks/activity_convey_ideas/${task.uuid}`;
+  const taskUrl = `/eid/issue/tasks/activity_participation/${task.uuid}`;
   const imageUrl = `${import.meta.env.VITE_HOST_URL_TPLANET}${task.thumbnail}`;
   const [sdgImages, setSdgImages] = useState([]);
 
@@ -86,7 +86,7 @@ const TaskCard = ({ task }) => {
             ))}
           </div>
 
-          <a href="#" onClick="{{child_task.href}}" className="btn btn-primary">
+          <a href={taskUrl} className="btn btn-primary">
             參與任務
           </a>
         </div>
@@ -96,16 +96,14 @@ const TaskCard = ({ task }) => {
 };
 
 const ActivityConveyIdeas = () => {
-  const [activityData, setActivityData] = useState(null);
+  //const [activityData, setActivityData] = useState(null);
   const [parentTask, setParentTask] = useState(null);
-  const [childTaskIds, setChildTaskIds] = useState([]);
+  //const [childTaskIds, setChildTaskIds] = useState([]);
   const [childTasks, setChildTasks] = useState([]);
   const { id } = useParams();
-  console.log(childTasks);
 
   useEffect(() => {
     if (id) {
-      console.log(id);
       const parentTaskString = localStorage.getItem(id);
       if (parentTaskString) {
         try {
@@ -115,7 +113,7 @@ const ActivityConveyIdeas = () => {
           // 獲取子任務的 ID
           getChildTasks(id)
             .then((ids) => {
-              setChildTaskIds(ids);
+              //setChildTaskIds(ids);
               return ids;
             })
             .then((ids) => {
@@ -133,15 +131,15 @@ const ActivityConveyIdeas = () => {
 
                 const sdgs = getSdgsIndexes(childTask);
 
-                setActivityData({
-                  ...parentTask,
-                  childTasks,
-                });
+                // setActivityData({
+                //   ...parentTask,
+                //   childTasks,
+                // });
                 return {
                   ...childTask,
                   sdgs,
                   period,
-                  href: `/tasks/activity_participation/${childTask.uuid}`,
+                  href: `/eid/issue/tasks/activity_participation/${childTask.uuid}`,
                 };
               });
               setChildTasks(updatedTasks);
@@ -156,7 +154,7 @@ const ActivityConveyIdeas = () => {
     }
   }, [id]);
 
-  if (!parentTask && !childTasks && !activityData) {
+  if (!parentTask && !childTasks) {
     return <div className="p-4">Loading...</div>;
   }
 
@@ -175,43 +173,6 @@ const ActivityConveyIdeas = () => {
           ))}
         </div>
       </div>
-
-      {/* <div className="grid gap-4">
-        {activityData.childTasks.map((childTask, index) => (
-          <Card key={childTask.uuid || index} className="overflow-hidden">
-            <div className="p-6">
-              <div className="flex flex-col gap-4">
-                <h2 className="text-xl font-semibold">{childTask.name}</h2>
-
-                <div className="text-gray-600">時間：{childTask.period}</div>
-
-                {childTask.sdgs.length > 0 && (
-                  <div>
-                    <h3 className="font-medium mb-2">SDGs</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {childTask.sdgs.map((sdg) => (
-                        <span
-                          key={sdg}
-                          className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded"
-                        >
-                          SDG {sdg}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <a
-                  href={childTask.href}
-                  className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 w-fit"
-                >
-                  參與任務
-                </a>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div> */}
     </div>
   );
 };

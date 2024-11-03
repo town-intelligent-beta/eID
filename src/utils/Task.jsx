@@ -40,7 +40,6 @@ export const getUserUuidTasks = async (email) => {
 
 // 獲取任務描述
 export const getTaskDescription = async (uuid) => {
-  console.log(`${import.meta.env.VITE_HOST_URL_TPLANET}/tasks/get/${uuid}`);
   return await makeRequest(
     `${import.meta.env.VITE_HOST_URL_TPLANET}/tasks/get/${uuid}`,
     "GET"

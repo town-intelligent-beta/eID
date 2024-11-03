@@ -11,7 +11,8 @@ import ForgetPw from "./pages/accounts/Forget-pw";
 import Wallet from "./pages/Tabs/Wallet";
 import About from "./pages/Tabs/About";
 import Issue from "./pages/Tabs/Issue";
-import Activity_convey_ideas from "./pages/Tabs/Activity_convey_ideas";
+import ActivityConveyIdeas from "./pages/Tabs/Activity_convey_ideas";
+import ActivityParticipation from "./pages/Tabs/Activity_participation";
 
 function App() {
   return (
@@ -36,7 +37,11 @@ function App() {
             <Route path="issue" element={<Issue />} />
             <Route
               path="issue/tasks/activity_convey_ideas/:id"
-              element={<Activity_convey_ideas />}
+              element={<ActivityConveyIdeas />}
+            />
+            <Route
+              path="issue/tasks/activity_participation/:id"
+              element={<ActivityParticipation />}
             />
           </Route>
           <Route
