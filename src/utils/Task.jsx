@@ -1,20 +1,14 @@
 // 通用的 API 請求函數
 const makeRequest = async (url, method, data = null) => {
   try {
-    const headers = {
-      "Content-Type": "application/json",
-    };
-
     // GET 请求不應包含 body
     const config = {
       method,
-      headers,
       credentials: "include", // 確保帶上 cookies
-      mode: "cors",
     };
 
     if (method !== "GET" && data) {
-      config.body = JSON.stringify(data); // POST/PUT等請求包含body
+      config.body = data; // POST/PUT等請求包含body
     }
 
     const response = await fetch(url, config);
@@ -33,72 +27,95 @@ const makeRequest = async (url, method, data = null) => {
 
 // 獲取用戶任務列表
 export const getUserUuidTasks = async (email) => {
-  const data = {
-    email: email,
-    task_type: "0",
-  };
+  const formdata = new FormData();
+  formdata.append("email", email);
+  formdata.append("task_type", "0");
 
-  return await makeRequest(`/api/tasks/list`, "POST", data);
+  return await makeRequest(
+    `${import.meta.env.VITE_HOST_URL_EID}/tasks/list`,
+    "POST",
+    formdata
+  );
 };
 
 // 獲取任務描述
 export const getTaskDescription = async (uuid) => {
-  return await makeRequest(`/api/tasks/get/${uuid}`, "GET");
+  console.log(`${import.meta.env.VITE_HOST_URL_TPLANET}/tasks/get/${uuid}`);
+  return await makeRequest(
+    `${import.meta.env.VITE_HOST_URL_TPLANET}/tasks/get/${uuid}`,
+    "GET"
+  );
 };
 
 // 獲取子任務
 export const getChildTasks = async (uuid) => {
-  const data = { uuid };
-  const result = await makeRequest(`/api/tasks/get_child_tasks`, "POST", data);
+  const formdata = new FormData();
+  formdata.append("uuid", uuid);
+  const result = await makeRequest(
+    `${import.meta.env.VITE_HOST_URL_TPLANET}/tasks/get_child_tasks`,
+    "POST",
+    formdata
+  );
   return result.task;
 };
 
 // 獲取父任務
 export const getParentTask = async (uuid) => {
   const data = { uuid };
-  const result = await makeRequest(`/api/tasks/get_parent_task`, "POST", data);
+  const formdata = new FormData();
+  formdata.append("uuid", uuid);
+  const result = await makeRequest(
+    `${import.meta.env.VITE_HOST_URL_EID}/tasks/get_parent_task`,
+    "POST",
+    formdata
+  );
   return result.task;
 };
 
 // 獲取任務狀態
 export const getTaskStatus = async (uuid) => {
   const email = localStorage.getItem("email"); // 假設使用 localStorage
-  const data = {
-    uuid: uuid,
-    email: email,
-  };
 
-  return await makeRequest(`/api/tasks/get_task_status`, "POST", data);
+  const formdata = new FormData();
+  formdata.append("uuid", uuid);
+  formdata.append("email", email);
+  return await makeRequest(
+    `${import.meta.env.VITE_HOST_URL_EID}/tasks/get_task_status`,
+    "POST",
+    formdata
+  );
 };
 
 // 計算進度
 export const calculateProgress = async (uuid) => {
   const email = localStorage.getItem("email");
-  const data = {
-    uuid: uuid,
-    email: email,
-  };
+  const formdata = new FormData();
+  formdata.append("uuid", uuid);
+  formdata.append("email", email);
 
-  return await makeRequest(`/api/tasks/cal_progress`, "POST", data);
+  return await makeRequest(
+    `${import.meta.env.VITE_HOST_URL_EID}/tasks/cal_progress`,
+    "POST",
+    formdata
+  );
 };
 
 // 保存任務
 export const taskSave = async (objTask) => {
   const email = localStorage.getItem("email");
-  const data = {
-    email: email,
-    uuid: objTask.uuid,
-  };
+  const formdata = new FormData();
+  formdata.append("uuid", objTask.uuid);
+  formdata.append("email", email);
 
   try {
-    const response = await fetch(`/api/tasks/save`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_HOST_URL_EID}/tasks/save`,
+      {
+        method: "POST",
+        body: formdata,
+        credentials: "include",
+      }
+    );
 
     const responseText = await response.text();
     return {
@@ -116,10 +133,17 @@ export const taskSave = async (objTask) => {
 
 // 提交任務
 export const submitTasks = async (data) => {
-  return await makeRequest(`/api/tasks/submit`, "POST", data);
+  return await makeRequest(
+    `${import.meta.env.VITE_HOST_URL_EID}/tasks/submit`,
+    "POST",
+    data
+  );
 };
 
 // 通過 UUID 保存任務
 export const saveTaskByUuid = async (uuidTask) => {
-  return await makeRequest(`/api/tasks/get/${uuidTask}`, "GET");
+  return await makeRequest(
+    `${import.meta.env.VITE_HOST_URL_EID}/tasks/get/${uuidTask}`,
+    "GET"
+  );
 };

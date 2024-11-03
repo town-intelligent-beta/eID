@@ -1,60 +1,88 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  //getTaskDescription,
-  getUserUuidTasks,
   getTaskStatus,
   calculateProgress,
+  getTaskDescription,
+  getUserUuidTasks,
 } from "../../utils/Task";
+import Watermark from "../../assets/verified-icon.png";
 
-export default function Issue() {
-  // const [issues, setIssues] = useState([]);
+const TaskCard = ({ task, isVerified }) => {
+  const taskUrl = `/eid/issue/tasks/activity_convey_ideas/${task.uuid}`;
+  const imageUrl = `${import.meta.env.VITE_HOST_URL_TPLANET}${task.thumbnail}`;
 
-  const [issues, setIssues] = useState([
-    {
-      uuid: "91661248",
-      email: "s889951234@gmail.com",
-      thumbnail:
-        "https://beta-tplanet-backend.4impact.cc/static/project/22381600/tasks/20684066/cover.png",
-      gps: true,
-    },
-  ]);
+  const TaskImage = () => (
+    <img
+      id={`task_cover_${task.uuid}`}
+      src={imageUrl}
+      width="160"
+      height="160"
+      alt={task.name}
+      className="w-full h-40 object-contain"
+    />
+  );
 
-  function updateTicket(uuidTarget, objTarget) {
+  const WatermarkedImage = () => (
+    <div className="relative">
+      <TaskImage />
+      <img
+        src={Watermark}
+        className="absolute top-0 left-0 z-[1000] opacity-50 scale-50 transform -translate-x-1/4 -translate-y-1/4 "
+        alt="verified"
+      />
+    </div>
+  );
+
+  return (
+    <div className="col-md-4">
+      <div className="card p-3 mb-2 text-center flex min-h-80 max-h-80 flex-col justify-between">
+        <a href={taskUrl} className="block">
+          {isVerified ? <WatermarkedImage /> : <TaskImage />}
+        </a>
+        <div className="card p-4">{task.name}</div>
+      </div>
+    </div>
+  );
+};
+
+export default function TaskList() {
+  const [tasks, setTasks] = useState([]);
+  const [verifiedTasks, setVerifiedTasks] = useState(new Set());
+
+  const updateTicket = (uuidTarget, objTarget) => {
     localStorage.setItem(uuidTarget, JSON.stringify(objTarget));
-  }
+  };
 
-  function setTaskInPage(obj) {
-    setIssues((prevIssues) => [...prevIssues, obj]);
-  }
+  const checkTaskVerified = async (uuid) => {
+    try {
+      const taskStatus = await getTaskStatus(uuid);
 
-  const getTaskInfo = async (reqUuidTask, setPage = 1) => {
-    console.log("getTaskInfo", reqUuidTask);
-    //const resultJSON = await getTaskDescription(reqUuidTask);
-    const getTaskDescription = async (uuid) => {
-      console.log(
-        "API url",
-        `${import.meta.env.VITE_HOST_URL_EID}/tasks/get/${uuid}`
-      );
-      const response = await fetch(
-        `${import.meta.env.VITE_HOST_URL_EID}/tasks/get/${uuid}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+      if (taskStatus.content === 1) {
+        return true;
       }
 
-      const result = await response.json();
-      console.log("getTaskDescription", result);
-      return result;
-    };
-    const resultJSON = await getTaskDescription(reqUuidTask);
+      if (taskStatus.content === 0) {
+        const taskProgress = await calculateProgress(uuid);
+        const taskContent = taskProgress.content;
+        if (
+          taskContent.all.length !== 0 &&
+          taskContent.verified.length === taskContent.all.length
+        ) {
+          return true;
+        }
+      }
 
+      return false;
+    } catch (error) {
+      console.error("Error checking task verification:", error);
+      return false;
+    }
+  };
+
+  const getTaskInfo = async (reqUuidTask, setPage = 1) => {
     try {
-      localStorage.setItem(resultJSON.uuid, JSON.stringify(resultJSON));
+      const resultJSON = await getTaskDescription(reqUuidTask);
+
       const dataJSON = {
         s1: "0",
         s2: "0",
@@ -75,119 +103,82 @@ export default function Issue() {
         s17: "0",
       };
 
-      resultJSON.ticket = dataJSON;
-      updateTicket(reqUuidTask, resultJSON);
+      const taskData = {
+        ...resultJSON,
+        ticket: dataJSON,
+      };
+
+      localStorage.setItem(resultJSON.uuid, JSON.stringify(taskData));
+      updateTicket(reqUuidTask, taskData);
 
       if (setPage === 1) {
-        setTaskInPage(JSON.parse(localStorage.getItem(resultJSON.uuid)));
+        setTasks((prevTasks) => {
+          const exists = prevTasks.some((task) => task.uuid === taskData.uuid);
+          if (!exists) {
+            return [...prevTasks, taskData];
+          }
+          return prevTasks;
+        });
+
+        const isVerified = await checkTaskVerified(taskData.uuid);
+        if (isVerified) {
+          setVerifiedTasks((prev) => new Set([...prev, taskData.uuid]));
+        }
       }
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.error("Error getting task info:", error);
     }
   };
 
   const listIssues = async (email) => {
-    const resultJSON = await getUserUuidTasks(email);
     try {
-      localStorage.setItem("list_tasks", resultJSON.uuid);
-      for (let i = 0; i < resultJSON.uuid.length; i++) {
-        let targetTicket = "";
-        const storedTask = localStorage.getItem(resultJSON.uuid[i]);
-        if (storedTask) {
-          const objUuid = JSON.parse(storedTask);
-          if (objUuid.ticket) {
-            targetTicket = objUuid.ticket;
-          }
-        }
+      const resultJSON = await getUserUuidTasks(email);
+      localStorage.setItem("list_tasks", JSON.stringify(resultJSON.uuid));
 
-        if (!storedTask || !targetTicket) {
-          getTaskInfo(resultJSON.uuid[i]);
-          //console.log("getTaskInfo", resultJSON.uuid[i]);
-        } else {
-          setTaskInPage(JSON.parse(storedTask));
-        }
-      }
-    } catch (e) {
-      console.log(e);
+      await Promise.all(
+        resultJSON.uuid.map(async (uuid) => {
+          const storedTask = localStorage.getItem(uuid);
+          if (storedTask) {
+            const parsedTask = JSON.parse(storedTask);
+            if (parsedTask.ticket) {
+              setTasks((prevTasks) => {
+                if (!prevTasks.some((task) => task.uuid === parsedTask.uuid)) {
+                  return [...prevTasks, parsedTask];
+                }
+                return prevTasks;
+              });
+
+              const isVerified = await checkTaskVerified(uuid);
+              if (isVerified) {
+                setVerifiedTasks((prev) => new Set([...prev, uuid]));
+              }
+              return;
+            }
+          }
+          await getTaskInfo(uuid);
+        })
+      );
+    } catch (error) {
+      console.error("Error listing issues:", error);
     }
   };
 
-  /*   useEffect(() => {
+  useEffect(() => {
     const email = localStorage.getItem("email");
     if (email) {
       listIssues(email);
     }
-  }, []); */
-
-  useEffect(() => {
-    // 直接調用 API，假設你已知的任務 UUID
-    const reqUuidTask = "20684066"; // 替換為實際的 UUID
-    getTaskInfo(reqUuidTask);
   }, []);
 
-  const checkTaskVerified = async (uuid) => {
-    const resultJSON = { status: false };
-    const objTaskStatus = await getTaskStatus(uuid);
-
-    if (objTaskStatus.content === 1) {
-      resultJSON.status = true;
-      return resultJSON;
-    }
-
-    if (objTaskStatus.content === 0) {
-      const objTaskProgress = await calculateProgress(uuid);
-      const objTaskContent = objTaskProgress.content;
-      if (
-        objTaskContent.all.length !== 0 &&
-        objTaskContent.verified.length === objTaskContent.all.length
-      ) {
-        resultJSON.status = true;
-        return resultJSON;
-      }
-    }
-
-    return resultJSON;
-  };
-
-  function overlayOnTask(img, objParent) {
-    return <div className="watermark">{img}</div>;
-  }
-
-  console.log("Rendering Issue component...");
-
   return (
-    <>
-      <div className="row">
-        <div className="col">
-          <div className="row mt-5" id="issues-list">
-            {issues.map((issue) => {
-              const resultTaskVerified = checkTaskVerified(issue.uuid);
-              const img = (
-                <img
-                  id={`task_cover_${issue.uuid}`}
-                  src={`${import.meta.env.VITE_HOST_URL_EID}${issue.thumbnail}`}
-                  width="160"
-                  height="160"
-                  alt="Task Cover"
-                />
-              );
-
-              return (
-                <div className="col-md-4" key={issue.uuid}>
-                  <div className="card p-3 mb-2 text-center">
-                    <a
-                      href={`/tasks/activity_convey_ideas.html?task=${issue.uuid}&gps=${issue.gps}`}
-                    >
-                      {resultTaskVerified.status ? overlayOnTask(img) : img}
-                    </a>
-                    <div className="card p-4">{issue.name}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </>
+    <div className="row mt-5">
+      {tasks.map((task) => (
+        <TaskCard
+          key={task.uuid}
+          task={task}
+          isVerified={verifiedTasks.has(task.uuid)}
+        />
+      ))}
+    </div>
   );
 }

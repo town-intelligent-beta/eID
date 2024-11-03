@@ -5,7 +5,7 @@ export default function Eid() {
   const activeKey = location.pathname.split("/").pop();
 
   const getLinkStyle = (key) => {
-    return activeKey === key
+    return location.pathname.includes(key)
       ? { backgroundColor: "#E5E5E599", color: "#000000" } // Active styles
       : { backgroundColor: "#ffffff", color: "#000000" }; // Default styles
   };

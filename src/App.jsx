@@ -1,4 +1,3 @@
-//import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./utils/ProtectRoute";
 import Nav from "./pages/components/Nav";
@@ -11,6 +10,8 @@ import ChangePassword from "./pages/backend/Change-pw";
 import ForgetPw from "./pages/accounts/Forget-pw";
 import Wallet from "./pages/Tabs/Wallet";
 import About from "./pages/Tabs/About";
+import Issue from "./pages/Tabs/Issue";
+import Activity_convey_ideas from "./pages/Tabs/Activity_convey_ideas";
 
 function App() {
   return (
@@ -33,6 +34,10 @@ function App() {
             <Route path="about" element={<About />} />
             <Route path="wallet" element={<Wallet />} />
             <Route path="issue" element={<Issue />} />
+            <Route
+              path="issue/tasks/activity_convey_ideas/:id"
+              element={<Activity_convey_ideas />}
+            />
           </Route>
           <Route
             path="/backend/edit-info"
