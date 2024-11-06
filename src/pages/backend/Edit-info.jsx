@@ -196,13 +196,10 @@ const EditInfo = () => {
         };
 
         reader.readAsDataURL(file);
-        const compressedPNGFile = await compressImageToBase64(file);
-        //const base64 = await convertToBase64(compressedPNGFile);
-        console.log("base64", compressedPNGFile);
-        const resultJSON = await uploadAvatarImg(compressedPNGFile);
+        const base64 = await compressImageToBase64(file);
+        const resultJSON = await uploadAvatarImg(base64);
 
         if (resultJSON.result) {
-          console.log("Avatar updated successfully:", resultJSON);
           alert("更新成功");
           navigate("/eid/about", { replace: true });
           setTimeout(() => {
