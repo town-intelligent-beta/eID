@@ -24,6 +24,7 @@ export default function About() {
                 backgroundImage: `url(${avatarImg || user})`,
                 height: "250px",
                 backgroundRepeat: "no-repeat",
+                backgroundSize: "contain",
               }}
             ></div>
           </div>

@@ -33,7 +33,7 @@ export default function Home() {
           </div>
           <div className="d-flex mt-5 mb-3 justify-content-center ">
             <a
-              className="rounded-2 bg-home_button p-4 text-white no-underline hover:underline"
+              className="rounded-2 bg-home_button p-2.5 text-white no-underline hover:underline"
               href="/accounts/signin"
               role="button"
             >

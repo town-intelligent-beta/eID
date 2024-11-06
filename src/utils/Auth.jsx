@@ -10,18 +10,17 @@ export const useVerifyToken = () => {
 
   const verifyToken = async (token) => {
     try {
-      const formBody = new URLSearchParams();
+      const formBody = new FormData();
       formBody.append("token", token);
 
-      const response = await fetch(`/api/accounts/verify_jwt`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formBody,
-        mode: "cors",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_URL_EID}/accounts/verify_jwt`,
+        {
+          method: "POST",
+          body: formBody,
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Token verification failed");
@@ -69,18 +68,17 @@ export const useVerifyToken = () => {
 // 獨立的 verifyToken 函數供外部使用
 export const verifyToken = async (token) => {
   try {
-    const formBody = new URLSearchParams();
+    const formBody = new FormData();
     formBody.append("token", token);
 
-    const response = await fetch(`/api/accounts/verify_jwt`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: formBody,
-      mode: "cors",
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_HOST_URL_EID}/accounts/verify_jwt`,
+      {
+        method: "POST",
+        body: formBody,
+        credentials: "include",
+      }
+    );
 
     if (!response.ok) {
       return false;
