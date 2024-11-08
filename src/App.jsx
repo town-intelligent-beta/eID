@@ -13,6 +13,7 @@ import About from "./pages/Tabs/About";
 import Issue from "./pages/Tabs/Issue";
 import ActivityConveyIdeas from "./pages/Tabs/Activity_convey_ideas";
 import ActivityParticipation from "./pages/Tabs/Activity_participation";
+import SocialImpactFrom from "./pages/Tabs/components/Social_impact_form";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
               element={<ActivityParticipation />}
             />
           </Route>
+          <Route path="social-impact" element={<SocialImpactFrom />} />
           <Route
             path="/backend/edit-info"
             element={

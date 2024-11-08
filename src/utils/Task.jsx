@@ -1,5 +1,5 @@
 // 通用的 API 請求函數
-const makeRequest = async (url, method, data = null) => {
+export const makeRequest = async (url, method, data = null) => {
   try {
     // GET 请求不應包含 body
     const config = {

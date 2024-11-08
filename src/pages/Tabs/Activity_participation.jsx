@@ -3,6 +3,7 @@ import { getTaskDescription } from "../../utils/Task";
 import { useParams, Link } from "react-router-dom";
 import image from "../../assets/image_icon.svg";
 import { useDropzone } from "react-dropzone";
+import { submitTaskTickets } from "../../utils/Foot_print";
 
 // export async function prepareSubmitProjectComment() {
 //   try {
@@ -53,6 +54,7 @@ export default function ActivityParticipation() {
   const [sdgImages, setSdgImages] = useState([]);
   const [uploadedImage, setUploadedImage] = useState(null);
 
+  // 取得 SDG 圖片
   const getSDGImage = async (sdg) => {
     try {
       const image = await import(`../../assets/SDGS/E_WEB_${sdg}.png`);
@@ -134,157 +136,9 @@ export default function ActivityParticipation() {
         </div>
       </div> */}
 
-      {/* <div className="row">
-        <div className="col">
-          <div className="container-fluid">
-            <form>
-              <div className="flex mt-3 w-full justify-center">
-                <div className="col-xxl-7 col-xl-7 col-lg-7 col-md-7 col-sm-12 col-12 w-1/2">
-                  <div className="form-row">
-                    <div className="form-group col-12 mb-1">
-                      <div
-                        id="img_block"
-                        className="border d-flex align-items-center justify-content-center h-100"
-                      >
-                        <button
-                          type="button"
-                          id="btn_foot_print_img"
-                          onClick={uploadFootPrintImg}
-                        >
-                          <div
-                            id="id_upload_foot_print_img"
-                            className="bg-contain"
-                            style={{
-                              backgroundImage:
-                                "url(../static/imgs/image_icon.svg)",
-                              width: "100px",
-                              height: "100px",
-                              backgroundRepeat: "no-repeat",
-                            }}
-                          ></div>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-xxl-7 col-xl-7 col-lg-7 col-md-7 col-sm-12 col-12 w-1/2">
-                  <div className="form-row">
-                    <div className="form-group col-12 mb-1">
-                      <label
-                        htmlFor="inputEvent"
-                        className="mb-1"
-                        style={{ fontSize: "14px" }}
-                      >
-                        活動名稱
-                      </label>
-                      <input
-                        id="task_name"
-                        type="text"
-                        className="form-control form-control-sm"
-                        placeholder=""
-                        readOnly
-                      />
-                    </div>
-                    <div className="form-group col-12 mb-1">
-                      <label
-                        htmlFor="inputEvent"
-                        className="mb-1"
-                        style={{ fontSize: "14px" }}
-                      >
-                        SDGs
-                      </label>
-                      <div className="d-flex flex-wrap" id="task_sdgs"></div>
-                    </div>
-                    <div className="form-group col-12 mb-1">
-                      <label
-                        htmlFor="inputDatePicker1"
-                        className="mb-1"
-                        style={{ fontSize: "14px" }}
-                      >
-                        時間
-                      </label>
-                      <div className="row">
-                        <div className="col-6">
-                          <div
-                            className="input-group date"
-                            data-target-input="nearest"
-                          >
-                            <input
-                              type="text"
-                              id="task_start_time"
-                              className="form-control form-control-sm datetimepicker-input"
-                              data-target="#datetimepicker1"
-                            />
-                            <div
-                              className="input-group-append"
-                              data-target="#datetimepicker1"
-                              data-toggle="datetimepicker"
-                            >
-                              <div className="input-group-text">
-                                <i className="fa fa-calendar"></i>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-6">
-                          <div
-                            className="input-group date"
-                            data-target-input="nearest"
-                          >
-                            <input
-                              type="text"
-                              id="task_end_time"
-                              className="form-control form-control-sm datetimepicker-input"
-                              data-target="#datetimepicker1"
-                            />
-                            <div
-                              className="input-group-append"
-                              data-target="#datetimepicker1"
-                              data-toggle="datetimepicker"
-                            >
-                              <div className="input-group-text">
-                                <i className="fa fa-calendar"></i>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div id="comment_block" className="form-group col-12 mb-1">
-                      <label
-                        htmlFor="textareaIdea"
-                        className="mb-1"
-                        style={{ fontSize: "14px" }}
-                      >
-                        關係人口評論
-                      </label>
-                      <textarea
-                        className="form-control form-control-sm w-100"
-                        id="Idcomment"
-                        placeholder=""
-                      ></textarea>
-                    </div>
-                  </div>
-                  <div className="col-12">
-                    <div className="text-center my-3">
-                      <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={prepareSubmitProjectComment}
-                      >
-                        提交
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div> */}
       <div className="flex w-11/12 mx-auto border border-t-gray mt-4">
         <div className="w-1/2">
-          <Link to="/foot_print.html" className="no-underline text-black">
+          <Link to="/social-impact" className="no-underline text-black">
             <div className="bg-main p-2 w-5/6 m-4 rounded-lg text-center mx-auto">
               社會影響力評估表單
             </div>
