@@ -59,21 +59,6 @@ export const submitTaskTickets = async (task_UUID) => {
 };
 
 export const submitTaskComment = async (dataJSON) => {
-  // const queryString = window.location.search;
-  // const urlParams = new URLSearchParams(queryString);
-  // const uuid = urlParams.get("uuid");
-
-  // const dataJSON = {
-  //   uuid,
-  //   email: localStorage.getItem("email"),
-  //   comment: document.getElementById("Idcomment").value,
-  //   img: document
-  //     .getElementById("id_upload_foot_print_img")
-  //     .style.backgroundImage.replace('url("', "")
-  //     .replace('")', ""),
-  // };
-
-  console.log("submitTaskComment", dataJSON);
   try {
     const resultBool = await commentProject(dataJSON);
     return resultBool;

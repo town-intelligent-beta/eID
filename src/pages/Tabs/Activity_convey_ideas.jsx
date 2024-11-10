@@ -1,55 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Card } from "react-bootstrap";
 import { getTaskDescription, getChildTasks } from "../../utils/Task";
 import { useParams } from "react-router-dom";
-
-//Helper function to get SDGs indexes
-const getSdgsIndexes = (task) => {
-  try {
-    const content = task.content.replace(/'/g, '"');
-    const contentParsed = JSON.parse(content);
-    const sdgsIndexes = [];
-
-    for (let index = 1; index <= 27; index++) {
-      if (contentParsed[`sdgs-${index}`] !== "1") {
-        continue;
-      }
-      const sdgsIndex = String(index).padStart(2, "0");
-      sdgsIndexes.push(sdgsIndex);
-    }
-
-    return sdgsIndexes;
-  } catch (error) {
-    console.error("Error parsing SDGs:", error);
-    return [];
-  }
-};
+import { getSdgsIndexes, getSDGImage } from "../../utils/Sdg";
+import PropTypes from "prop-types";
 
 const TaskCard = ({ task }) => {
   const taskUrl = `/eid/issue/tasks/activity_participation/${task.uuid}`;
-  const imageUrl = `${import.meta.env.VITE_HOST_URL_TPLANET}${task.thumbnail}`;
+  //const imageUrl = `${import.meta.env.VITE_HOST_URL_TPLANET}${task.thumbnail}`;
   const [sdgImages, setSdgImages] = useState([]);
 
-  const TaskImage = () => (
-    <img
-      id={`task_cover_${task.uuid}`}
-      src={imageUrl}
-      width="160"
-      height="160"
-      alt={task.name}
-      className="w-full h-40 object-contain"
-    />
-  );
-
-  const getSDGImage = async (sdg) => {
-    try {
-      const image = await import(`../../assets/SDGS/E_WEB_${sdg}.png`);
-      return image.default;
-    } catch (error) {
-      console.error("Error loading SDG image:", error);
-      return null;
-    }
-  };
+  // const TaskImage = () => (
+  //   <img
+  //     id={`task_cover_${task.uuid}`}
+  //     src={imageUrl}
+  //     width="160"
+  //     height="160"
+  //     alt={task.name}
+  //     className="w-full h-40 object-contain"
+  //   />
+  // );
 
   useEffect(() => {
     const loadImages = async () => {
@@ -73,7 +42,7 @@ const TaskCard = ({ task }) => {
           </p>
 
           <h5>SDGs</h5>
-          <div className="my-4 min-h-10 flex w-full">
+          <div className="my-4 min-h-10 flex w-full flex-wrap">
             {sdgImages.map((src, index) => (
               <img
                 key={task.sdgs[index]}
@@ -93,6 +62,17 @@ const TaskCard = ({ task }) => {
       </div>
     </div>
   );
+};
+
+TaskCard.propTypes = {
+  task: PropTypes.shape({
+    uuid: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    thumbnail: PropTypes.string.isRequired,
+    sdgs: PropTypes.arrayOf(PropTypes.string).isRequired,
+    period: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 const ActivityConveyIdeas = () => {
