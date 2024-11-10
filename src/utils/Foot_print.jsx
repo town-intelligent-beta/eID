@@ -43,8 +43,13 @@ export const submitTaskTickets = async (task_UUID) => {
     "sdgs-27": obj.ticket.s27,
   };
 
+  const formData = new FormData();
+  Object.keys(dataJSON).forEach((key) => {
+    formData.append(key, dataJSON[key]);
+  });
+
   try {
-    const taskWeight = await submitTasks(dataJSON);
+    const taskWeight = await submitTasks(formData);
     localStorage.setItem("project_weight", taskWeight);
     return taskWeight;
   } catch (error) {
@@ -53,21 +58,22 @@ export const submitTaskTickets = async (task_UUID) => {
   }
 };
 
-export const submitTaskComment = async () => {
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const uuid = urlParams.get("uuid");
+export const submitTaskComment = async (dataJSON) => {
+  // const queryString = window.location.search;
+  // const urlParams = new URLSearchParams(queryString);
+  // const uuid = urlParams.get("uuid");
 
-  const dataJSON = {
-    uuid,
-    email: localStorage.getItem("email"),
-    comment: document.getElementById("Idcomment").value,
-    img: document
-      .getElementById("id_upload_foot_print_img")
-      .style.backgroundImage.replace('url("', "")
-      .replace('")', ""),
-  };
+  // const dataJSON = {
+  //   uuid,
+  //   email: localStorage.getItem("email"),
+  //   comment: document.getElementById("Idcomment").value,
+  //   img: document
+  //     .getElementById("id_upload_foot_print_img")
+  //     .style.backgroundImage.replace('url("', "")
+  //     .replace('")', ""),
+  // };
 
+  console.log("submitTaskComment", dataJSON);
   try {
     const resultBool = await commentProject(dataJSON);
     return resultBool;
@@ -258,7 +264,7 @@ export const getProjectWeight = async (uuid_task) => {
 
   try {
     const projectWeight = await makeRequest(
-      `${import.meta.env.VITE_HOST_URL_EID}/projects/weight`,
+      `${import.meta.env.VITE_HOST_URL_TPLANET}/projects/weight`,
       "POST",
       formData
     );
@@ -277,7 +283,7 @@ export const commentProject = async (dataJSON) => {
 
   try {
     const result = await makeRequest(
-      `${import.meta.env.VITE_HOST_URL_EID}/projects/comment`,
+      `${import.meta.env.VITE_HOST_URL_TPLANET}/projects/comment`,
       "POST",
       formData
     );

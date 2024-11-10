@@ -14,6 +14,7 @@ import Issue from "./pages/Tabs/Issue";
 import ActivityConveyIdeas from "./pages/Tabs/Activity_convey_ideas";
 import ActivityParticipation from "./pages/Tabs/Activity_participation";
 import SocialImpactFrom from "./pages/Tabs/components/Social_impact_form";
+import FootPrint from "./pages/Tabs/Foot_print";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="about" element={<About />} />
             <Route path="wallet" element={<Wallet />} />
             <Route path="issue" element={<Issue />} />
+            <Route path="foot_print" element={<FootPrint />} />
             <Route
               path="issue/tasks/activity_convey_ideas/:id"
               element={<ActivityConveyIdeas />}

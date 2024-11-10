@@ -133,7 +133,7 @@ export const taskSave = async (objTask) => {
 // 提交任務
 export const submitTasks = async (data) => {
   return await makeRequest(
-    `${import.meta.env.VITE_HOST_URL_EID}/tasks/submit`,
+    `${import.meta.env.VITE_HOST_URL_TPLANET}/tasks/submit`,
     "POST",
     data
   );
@@ -142,7 +142,7 @@ export const submitTasks = async (data) => {
 // 通過 UUID 保存任務
 export const saveTaskByUuid = async (uuidTask) => {
   return await makeRequest(
-    `${import.meta.env.VITE_HOST_URL_EID}/tasks/get/${uuidTask}`,
+    `${import.meta.env.VITE_HOST_URL_TPLANET}/tasks/get/${uuidTask}`,
     "GET"
   );
 };

@@ -7,10 +7,40 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import { Step1, Step2, Step3 } from "./Step";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import enter from "../../../assets/enter.png";
+
+function SubmissionSuccess() {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(-1); // 返回上一頁
+  };
+
+  return (
+    <>
+      <div className="flex items-center h-full">
+        <img src={enter} alt="success" className="w-10" />
+        <div>非常感謝撥空填寫。</div>
+      </div>
+      <div className="mt-4">
+        <Button
+          size="medium"
+          variant="contained"
+          color="primary"
+          onClick={handleBack}
+        >
+          返回影響力護照
+        </Button>
+      </div>
+    </>
+  );
+}
 
 function SocialImpactFrom() {
   const theme = useTheme();
   const formData = useSelector((state) => state.formdata);
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
 
   const steps = [
     {
@@ -28,8 +58,8 @@ function SocialImpactFrom() {
 
   const handleNext = () => {
     if (activeStep === maxSteps - 1) {
-      // Handle form submission here
-      console.log("Form submitted");
+      alert("Form submitted");
+      setIsSubmitted(true);
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
@@ -41,44 +71,54 @@ function SocialImpactFrom() {
 
   return (
     <div className="w-4/5 mx-auto">
-      <Box sx={{ width: "100%", p: 2 }}>{steps[activeStep].page}</Box>
-      <MobileStepper
-        variant="text"
-        steps={maxSteps}
-        position="static"
-        activeStep={activeStep}
-        nextButton={
-          activeStep === maxSteps - 1 ? (
-            <Button
-              size="small"
-              onClick={handleNext}
-              variant="contained"
-              color="primary"
-            >
-              送出
-            </Button>
-          ) : (
-            <Button size="small" onClick={handleNext}>
-              下一頁
-              {theme.direction === "rtl" ? (
-                <KeyboardArrowLeft />
+      {isSubmitted ? (
+        <SubmissionSuccess />
+      ) : (
+        <>
+          <Box sx={{ width: "100%", p: 2 }}>{steps[activeStep].page}</Box>
+          <MobileStepper
+            variant="text"
+            steps={maxSteps}
+            position="static"
+            activeStep={activeStep}
+            nextButton={
+              activeStep === maxSteps - 1 ? (
+                <Button
+                  size="small"
+                  //onClick={submitTaskComment}
+                  variant="contained"
+                  color="primary"
+                >
+                  送出
+                </Button>
               ) : (
-                <KeyboardArrowRight />
-              )}
-            </Button>
-          )
-        }
-        backButton={
-          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-            {theme.direction === "rtl" ? (
-              <KeyboardArrowRight />
-            ) : (
-              <KeyboardArrowLeft />
-            )}
-            上一頁
-          </Button>
-        }
-      />
+                <Button size="small" onClick={handleNext}>
+                  下一頁
+                  {theme.direction === "rtl" ? (
+                    <KeyboardArrowLeft />
+                  ) : (
+                    <KeyboardArrowRight />
+                  )}
+                </Button>
+              )
+            }
+            backButton={
+              <Button
+                size="small"
+                onClick={handleBack}
+                disabled={activeStep === 0}
+              >
+                {theme.direction === "rtl" ? (
+                  <KeyboardArrowRight />
+                ) : (
+                  <KeyboardArrowLeft />
+                )}
+                上一頁
+              </Button>
+            }
+          />
+        </>
+      )}
     </div>
   );
 }
