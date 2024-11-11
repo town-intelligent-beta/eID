@@ -76,7 +76,6 @@ export default function Signin() {
       formData.append("password", password);
       const result = await signin(formData);
 
-      // 假設登入成功後的處理，例如儲存 token 等
       if (result.token) {
         localStorage.setItem("jwt", result.token);
         localStorage.setItem("username", result.username);
@@ -85,7 +84,6 @@ export default function Signin() {
         navigate("/eid");
       }
     } catch (error) {
-      // 錯誤已經在 signin 函數中處理
       console.error("提交表單時發生錯誤:", error);
     }
   };
@@ -146,10 +144,7 @@ export default function Signin() {
     try {
       const auth2 = window.gapi.auth2.getAuthInstance();
       const googleUser = await auth2.signIn();
-
       const userId = googleUser.getId();
-      console.log(`user_id: ${userId}`);
-
       const authResponse = googleUser.getAuthResponse(true);
       const idToken = authResponse.id_token;
 
@@ -158,15 +153,17 @@ export default function Signin() {
         personFields: "names,emailAddresses",
       });
 
+      const userEmail = peopleResponse.result.emailAddresses[0].value;
       const resultJSON = await handleEidGoogleLogin(idToken, peopleResponse);
 
       try {
         localStorage.setItem("jwt", resultJSON.token);
         localStorage.setItem("username", resultJSON.username);
-        localStorage.setItem("email", resultJSON.emailAddresses[0].value);
+        localStorage.setItem("email", userEmail);
+        await fetchAvatarImg();
         navigate("/eid");
       } catch (e) {
-        alert("登入失敗，請洽系統管理員！");
+        alert("電子郵件或密碼錯誤，請重新輸入。若忘記密碼，請點擊「忘記密碼」。");
       }
     } catch (error) {
       console.error("Google登入失敗:", error);

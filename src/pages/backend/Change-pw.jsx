@@ -54,7 +54,7 @@ const ChangePassword = () => {
     const formdata = new FormData();
     formdata.append("email", localStorage.getItem("email"));
     formdata.append("username", localStorage.getItem("username"));
-    formdata.append("password", currentPassword);
+    formdata.append("password", newPassword);
 
     const result = await changePassword(formdata);
     if (result) {

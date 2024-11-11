@@ -40,7 +40,7 @@ export default function Signin() {
         {
           method: "POST",
           body: formdata,
-          credentials: "include", // Handles CORS if needed
+          credentials: "include",
         }
       );
 
@@ -49,7 +49,7 @@ export default function Signin() {
       }
 
       const resultJSON = await response.json();
-      console.log("Signup result:", resultJSON);
+      resultJSON.username = formdata.get("username");
       setResult(resultJSON);
       return resultJSON;
     } catch (error) {
@@ -62,24 +62,33 @@ export default function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (password.length < 8) {
+      alert("密碼長度不得小於8字元！");
+      return;
+    }
+
+    if (password !== cfmPassword) {
+      alert("密碼與確認密碼不相符！");
+      return;
+    }
+
     const formBody = new FormData();
     formBody.append("username", username);
     formBody.append("email", email);
     formBody.append("password", password);
 
     const result = await signup(formBody);
-    if (result) {
+    if (result?.token) {  // 確保有 token 才進行下一步
       console.log("Signup successful:", result);
-      localStorage.setItem("username", result.username);
+      // 使用表單中的 username，而不是依賴 API 回傳
+      localStorage.setItem("username", username);
       localStorage.setItem("email", email);
       localStorage.setItem("jwt", result.token);
       alert("註冊成功！");
       navigate("/eid");
-      // 處理註冊成功的邏輯
     } else {
       console.error("Signup failed");
-      alert("註冊失敗，請洽系統管理員！");
-      // 處理註冊失敗的邏輯
+      alert("此電子郵件或使用者名稱已被註冊，請使用其他電子郵件或使用者名稱。");
     }
   };
 

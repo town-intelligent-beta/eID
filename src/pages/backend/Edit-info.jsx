@@ -75,7 +75,7 @@ const EditInfo = () => {
       // 處理修改成功的邏輯
     } else {
       console.error("Failed to modify username");
-      alert("修改失敗，請洽系統管理員。");
+      alert("此使用者名稱已被註冊，請使用其他使用者名稱。");
       // 處理修改失敗的邏輯
     }
   };
