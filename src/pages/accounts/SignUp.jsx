@@ -14,12 +14,6 @@ export default function Signin() {
   const [result, setResult] = useState(null);
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    username: username,
-    email: email,
-    password: password,
-  });
-
   const handleCfmPasswordChange = (e) => {
     const value = e.target.value;
     setCfmPassword(value);
@@ -35,34 +29,27 @@ export default function Signin() {
     setPasswordShowIcon(value.length < 8);
   };
 
-  const signup = async (dataJSON) => {
+  const signup = async (formdata) => {
     try {
       if (password !== cfmPassword) {
         throw new Error("Password and Confirm Password are not the same");
       }
 
-      const formBody = new URLSearchParams();
-      Object.keys(dataJSON).forEach((key) => {
-        formBody.append(key, dataJSON[key]);
-      });
-
-      const response = await fetch(`/api/accounts/signup`, {
-        method: "POST",
-        headers: {
-          //'Content-Type': 'application/json',
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formBody,
-        mode: "cors", // 明確指定 CORS 模式
-        credentials: "include", // Handles CORS if needed
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_URL_EID}/accounts/signup`,
+        {
+          method: "POST",
+          body: formdata,
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
 
       const resultJSON = await response.json();
-      console.log("Signup result:", resultJSON);
+      resultJSON.username = formdata.get("username");
       setResult(resultJSON);
       return resultJSON;
     } catch (error) {
@@ -74,19 +61,34 @@ export default function Signin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await signup(formData);
-    if (result) {
+
+    if (password.length < 8) {
+      alert("密碼長度不得小於8字元！");
+      return;
+    }
+
+    if (password !== cfmPassword) {
+      alert("密碼與確認密碼不相符！");
+      return;
+    }
+
+    const formBody = new FormData();
+    formBody.append("username", username);
+    formBody.append("email", email);
+    formBody.append("password", password);
+
+    const result = await signup(formBody);
+    if (result?.token) {  // 確保有 token 才進行下一步
       console.log("Signup successful:", result);
-      localStorage.setItem("username", result.username);
+      // 使用表單中的 username，而不是依賴 API 回傳
+      localStorage.setItem("username", username);
       localStorage.setItem("email", email);
       localStorage.setItem("jwt", result.token);
       alert("註冊成功！");
       navigate("/eid");
-      // 處理註冊成功的邏輯
     } else {
       console.error("Signup failed");
-      alert("註冊失敗，請洽系統管理員！");
-      // 處理註冊失敗的邏輯
+      alert("此電子郵件或使用者名稱已被註冊，請使用其他電子郵件或使用者名稱。");
     }
   };
 
