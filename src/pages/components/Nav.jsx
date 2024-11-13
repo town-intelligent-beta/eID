@@ -20,7 +20,7 @@ export default function Nav() {
 
   return (
     <nav className="flex items-center justify-between p-4 bg-white">
-      <div className="flex items-center">
+      <div className="flex items-center w-[70%]">
         <a href="/" className="text-lg font-bold">
           <img
             src={Logo}

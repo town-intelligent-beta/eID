@@ -39,41 +39,31 @@ export const SatisfactionRadioComponent = ({
           {index}. 對本活動的「{name}」安排滿意度？{" "}
           <span className="text-red">*</span>
         </label>
-        <div className="flex flex-col justify-center items-center gap-2 md:flex-row">
-          <label>非常不滿意</label>
+        <div className="mx-auto md:flex md:justify-center md:items-center">
+          <label className="hidden md:flex">非常不滿意</label>
           <RadioGroup
-            row={matches}
+            row
             aria-labelledby="demo-form-control-label-placement"
             name="position"
             value={radioValue}
             onChange={handleRadioChange}
           >
-            <FormControlLabel
-              value="1"
-              control={<Radio />}
-              label="1"
-              labelPlacement="bottom"
-            />
-            <FormControlLabel
-              value="2"
-              control={<Radio />}
-              label="2"
-              labelPlacement="bottom"
-            />
-            <FormControlLabel
-              value="3"
-              control={<Radio />}
-              label="3"
-              labelPlacement="bottom"
-            />
-            <FormControlLabel
-              value="4"
-              control={<Radio />}
-              label="4"
-              labelPlacement="bottom"
-            />
+            {[1, 2, 3, 4].map((item, index) => (
+              <FormControlLabel
+                key={index}
+                value={item}
+                control={<Radio />}
+                label={item}
+                labelPlacement="bottom"
+                sx={{ margin: matches ? "0 1rem" : "0" }}
+              />
+            ))}
           </RadioGroup>
-          <label>非常滿意</label>
+          <div className="flex justify-between md:hidden">
+            <label className="text-xs">非常不滿意</label>
+            <label className="text-xs">非常滿意</label>
+          </div>
+          <label className="hidden md:flex">非常滿意</label>
         </div>
       </div>
       <div className="flex flex-col gap-3 border p-4 rounded-xl">
@@ -96,7 +86,6 @@ export const ImpactRadioComponent = ({
   option,
   isCheck,
   isRequire,
-  subTitle,
   formData,
   setFormData,
 }) => {
@@ -140,8 +129,6 @@ export const ImpactRadioComponent = ({
         <label>
           {title}
           {isRequire && <span className="text-red">*</span>}
-          <br />
-          {subTitle}
         </label>
         <div className="flex justify-start items-center gap-2">
           <RadioGroup

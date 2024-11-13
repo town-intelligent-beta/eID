@@ -39,26 +39,25 @@ export function Step1() {
   };
 
   return (
-    <div className="w-10/12 md:w-4/5 mx-auto ">
+    <div className="w-11/12 md:w-4/5 mx-auto ">
       <form className="flex flex-col gap-4">
         <div className="flex flex-col gap-2 border p-4 rounded-xl">
-          <h3>社會影響力評估表單</h3>
-          <p className="font-bold underline">
+          <h3 className="min-w-[200px] mx-auto md:w-full">
+            社會影響力評估表單
+          </h3>
+          <p className="font-bold underline text-sm">
             什麼是社會投資報酬率？為何需要進行計算？
           </p>
-          <p>
+          <p className="text-sm">
             過去面對各項議題經常以經濟效應做為評估標準，然為了因應社會、環境、經濟等永續發展的趨勢，發展出了社會影響力的評估。
           </p>
-          <p>
+          <p className="text-sm">
             社會影響力報告就如同此產品或專案的社會影響力的證明，需由專業人員去做計算與撰寫，而呈現的方式是一個數值為
             SROI (Social Return on Investment) 也就是社會投資報酬率。
           </p>
-          <p>
-            SROI 是由 Jeremy Nicholas 所創辦的，他是國際社會價值協會（Social
-            Value
-            International）的執行長，英國第三部門辦公室（相當於台灣衛福部）用這個方法來評估社會福利預算分配。現為廣大在全球使用，做為一個公信力的證明參考。
+          <p className="font-bold underline text-sm">
+            小鎮賦能股份有限公司 製作
           </p>
-          <p className="font-bold underline">小鎮賦能股份有限公司 製作</p>
         </div>
         <div className="flex flex-col gap-2 border p-4 rounded-xl">
           <label>
@@ -148,8 +147,10 @@ export function Step2() {
       <div className="w-full md:w-4/5 mx-auto ">
         <form className="flex flex-col gap-4">
           <div className="flex flex-col gap-2 border p-4 rounded-xl">
-            <h3>社會影響力評估表單</h3>
-            <p className="font-bold">滿意度調查問題</p>
+            <h3 className="min-w-[200px] mx-auto md:w-full">
+              社會影響力評估表單
+            </h3>
+            <p className="font-bold text-sm">滿意度調查問題</p>
           </div>
           <SatisfactionRadioComponent
             index="1"
@@ -219,10 +220,14 @@ export function Step3() {
     <div className="w-full md:w-4/5 mx-auto ">
       <form className="flex flex-col gap-4">
         <div className="flex flex-col gap-2 border p-4 rounded-xl">
-          <h3>社會影響力評估表單</h3>
-          <p className="font-bold">社會影響力價值評估</p>
-          <p>將分為三個面向進行投資報酬率評估，經濟、社會、環境。</p>
-          <p>以下的問題將以上述三個面向為架構進行調查</p>
+          <h3 className="min-w-[200px] mx-auto md:w-full">
+            社會影響力評估表單
+          </h3>
+          <p className="font-bold text-sm">社會影響力價值評估</p>
+          <p className="text-sm">
+            將分為三個面向進行投資報酬率評估，經濟、社會、環境。
+          </p>
+          <p className="text-sm">以下的問題將以上述三個面向為架構進行調查</p>
         </div>
         <ImpactRadioComponent
           subKey="1.1"
@@ -250,7 +255,6 @@ export function Step3() {
         <ImpactRadioComponent
           subKey="1.2.1"
           title="【經濟1-2-1】在此合作或新的工作中大概產生多少價值"
-          subTitle="計算方法：加總參加者所填寫之價值總價，即可算出提升之技能水平。"
           option={[
             "無",
             "5000元以下",
@@ -342,8 +346,6 @@ export function Step3() {
         <ImpactRadioComponent
           subKey="2.5"
           title="【社會2-5】在本活動的主要的概念推展中，您認為是否有知識性的提升"
-          subTitle="計算方法：
-根據對於概念提升的分數，需要達到3分以上並且在質化說明中具體說明提升的內容，即可作為計算人員。"
           option={[
             "1.無提升",
             "2.淺層知識提升",
