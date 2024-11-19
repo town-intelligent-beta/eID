@@ -9,6 +9,8 @@ import { Step1, Step2, Step3 } from "./Step";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import enter from "../../../assets/enter.png";
+import { useParams } from "react-router-dom";
+import { submitSROIForm } from "../../../utils/SROI";
 
 function SubmissionSuccess() {
   const navigate = useNavigate();
@@ -38,9 +40,12 @@ function SubmissionSuccess() {
 }
 
 function SocialImpactFrom() {
+  const uuid = useParams();
+  const email = localStorage.getItem("email");
   const theme = useTheme();
-  const formData = useSelector((state) => state.formdata);
+  const rawData = useSelector((state) => state.formdata);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [file, setFile] = React.useState(null);
 
   const steps = [
     {
@@ -50,7 +55,7 @@ function SocialImpactFrom() {
       page: <Step2 />,
     },
     {
-      page: <Step3 />,
+      page: <Step3 setFile={setFile} />,
     },
   ];
   const [activeStep, setActiveStep] = React.useState(0);
@@ -58,8 +63,7 @@ function SocialImpactFrom() {
 
   const handleNext = () => {
     if (activeStep === maxSteps - 1) {
-      alert("Form submitted");
-      setIsSubmitted(true);
+      return;
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
@@ -67,6 +71,19 @@ function SocialImpactFrom() {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const result = await submitSROIForm(uuid, email, rawData, file);
+      alert("Form submitted");
+      setIsSubmitted(true);
+      console.log(result);
+    } catch (error) {
+      console.error("Error submitting SROI form:", error);
+    }
   };
 
   return (
@@ -85,7 +102,7 @@ function SocialImpactFrom() {
               activeStep === maxSteps - 1 ? (
                 <Button
                   size="small"
-                  //onClick={submitTaskComment}
+                  onClick={handleSubmit}
                   variant="contained"
                   color="primary"
                 >

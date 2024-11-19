@@ -76,7 +76,7 @@ export default function ActivityParticipation() {
     <>
       <div className="flex w-11/12 mx-auto border border-t-gray mt-4">
         <div className="w-1/2">
-          <Link to="/social-impact" className="no-underline text-black">
+          <Link to={`/social-impact/${id}`} className="no-underline text-black">
             <div className="bg-main p-2 w-5/6 m-4 rounded-lg text-center mx-auto">
               社會影響力評估表單
             </div>

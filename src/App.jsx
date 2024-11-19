@@ -47,7 +47,7 @@ function App() {
               element={<ActivityParticipation />}
             />
           </Route>
-          <Route path="social-impact" element={<SocialImpactFrom />} />
+          <Route path="social-impact/:id" element={<SocialImpactFrom />} />
           <Route
             path="/backend/edit-info"
             element={

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import TextField from "@mui/material/TextField";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -200,9 +201,10 @@ export function Step2() {
   );
 }
 
-export function Step3() {
+export function Step3({ setFile }) {
   const Step3FormData = useSelector((state) => state.formdata.step3);
   const [formData, setFormData] = useState(Step3FormData);
+  const [fileName, setFileName] = useState("");
 
   const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -216,6 +218,13 @@ export function Step3() {
     width: 1,
   });
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFileName(file.name);
+      setFile(file);
+    }
+  };
   return (
     <div className="w-full md:w-4/5 mx-auto ">
       <form className="flex flex-col gap-4">
@@ -424,14 +433,16 @@ export function Step3() {
               startIcon={<CloudUploadIcon />}
             >
               新增檔案
-              <VisuallyHiddenInput
-                type="file"
-                onChange={(event) => console.log(event.target.files)}
-              />
+              <VisuallyHiddenInput type="file" onChange={handleFileChange} />
             </Button>
+            {fileName && <p className="mt-2 text-sm">{fileName}</p>}
           </div>
         </div>
       </form>
     </div>
   );
 }
+
+Step3.propTypes = {
+  setFile: PropTypes.func.isRequired,
+};
