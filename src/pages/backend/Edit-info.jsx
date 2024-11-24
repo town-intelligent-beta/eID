@@ -8,6 +8,8 @@ import user from "../../assets/pages/user.png";
 import { useNavigate } from "react-router-dom";
 import { verifyToken } from "../../utils/Auth";
 import { useDropzone } from "react-dropzone";
+import Loading from "../components/Loading";
+import { compressImageToBase64 } from "../../utils/HandleImg";
 
 const EditInfo = () => {
   const [username, setUsername] = useState("");
@@ -39,31 +41,24 @@ const EditInfo = () => {
 
   //修改使用者名稱
   const modifyUsername = async (username) => {
-    const dataJSON = {
-      email: email,
-      username: username,
-    };
-    const formBody = new URLSearchParams();
-    Object.keys(dataJSON).forEach((key) => {
-      formBody.append(key, dataJSON[key]);
-    });
+    const formBody = new FormData();
+    formBody.append("email", email);
+    formBody.append("username", username);
 
     try {
-      const response = await fetch(`/api/accounts/modify`, {
-        method: "POST",
-        headers: {
-          //"Content-Type": "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formBody,
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_URL_EID}/accounts/modify`,
+        {
+          method: "POST",
+          body: formBody,
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
 
       const resultJSON = await response.json();
-      //setResult(resultJSON);
       return resultJSON;
     } catch (error) {
       console.error("Error modifying username:", error);
@@ -90,20 +85,15 @@ const EditInfo = () => {
   //變更圖片
   const uploadAvatarImg = async (base64Img) => {
     try {
-      const dataJSON = {
-        email: email,
-        img: base64Img,
-      };
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("img", base64Img);
 
       const response = await fetch(
         `${import.meta.env.VITE_HOST_URL_EID}/accounts/modify`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dataJSON),
-          mode: "cors",
+          body: formData,
           credentials: "include",
         }
       );
@@ -127,7 +117,6 @@ const EditInfo = () => {
         setError("");
 
         const file = acceptedFiles[0];
-        const base64 = await convertToBase64(file);
         const reader = new FileReader();
 
         reader.onload = () => {
@@ -135,16 +124,21 @@ const EditInfo = () => {
         };
 
         reader.readAsDataURL(file);
+        const base64 = await compressImageToBase64(file);
         const resultJSON = await uploadAvatarImg(base64);
 
         if (resultJSON.result) {
           alert("更新成功");
-          navigate("/eid");
+          navigate("/eid/about", { replace: true });
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
         } else {
           alert("更新失敗，請洽系統管理員。");
         }
       } catch (error) {
         setError("上傳頭像失敗，請重試");
+        alert("上傳頭像失敗，請重試");
         console.error("Avatar upload error:", error);
       } finally {
         setLoading(false);
@@ -152,31 +146,9 @@ const EditInfo = () => {
     },
   });
 
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  };
-
   return (
     <>
-      {loading && (
-        <div id="loading">
-          <div id="loading-text">
-            <p>上傳中 ...</p>
-          </div>
-          <div id="loading-spinner">
-            <img src="/static/imgs/loading.png" alt="Loading" />
-          </div>
-        </div>
-      )}
+      {loading && <Loading />}
 
       <>
         <div className="row">
@@ -216,25 +188,6 @@ const EditInfo = () => {
                         確認
                       </Button>
                     </InputGroup>
-                    {/* <div className="col-sm-10 input-group">
-                      <input
-                        id="username"
-                        type="text"
-                        className="form-control"
-                        aria-label="Dollar amount (with dot and two decimal places)"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                      />
-                      <div className="input-group-append">
-                        <button
-                          className="btn btn-primary btn-sm"
-                          type="button"
-                          onClick={editUsername}
-                        >
-                          確認
-                        </button>
-                      </div>
-                    </div> */}
                   </div>
 
                   <div className="flex gap-2">
@@ -254,24 +207,6 @@ const EditInfo = () => {
                         編輯
                       </Button>
                     </InputGroup>
-                    {/* <div className="col-sm-10 flex">
-                      <input
-                        type="text"
-                        className="form-control-plaintext"
-                        readOnly
-                        aria-label="Dollar amount (with dot and two decimal places)"
-                        value="********"
-                      />
-                      <div className="">
-                        <button
-                          id="change-password-button"
-                          className="btn btn-primary btn-sm rounded"
-                          type="button"
-                        >
-                          編輯
-                        </button>
-                      </div>
-                    </div> */}
                   </div>
 
                   <div className="flex gap-4">
@@ -289,7 +224,7 @@ const EditInfo = () => {
                     </button>
                     <button
                       className="bg-light w-full flex items-center justify-center p-2 rounded-lg"
-                      onClick={() => navigate("/eid")}
+                      onClick={() => navigate("/eid/about")}
                     >
                       <img
                         src={back}
