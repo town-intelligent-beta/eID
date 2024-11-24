@@ -1,9 +1,6 @@
 export const submitSROIForm = async (uuid, email, rawData, file) => {
-  const myHeaders = new Headers();
-  myHeaders.append("Content-Type", "multipart/form-data");
-
   const formData = new FormData();
-  formData.append("uuid_task", uuid);
+  formData.append("uuid_task", uuid.id);
   formData.append("email", email);
   formData.append("name", rawData.step1.name);
   formData.append("organization", rawData.step1.organization);
@@ -89,7 +86,7 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
   );
   formData.append(
     "social_impact_assessment[topic2][answer]",
-    rawData.step3["1.2"].radio
+    JSON.stringify(rawData.step3["1.2"])
   );
   formData.append(
     "social_impact_assessment[topic2][sub_question][question]",
@@ -97,7 +94,7 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
   );
   formData.append(
     "social_impact_assessment[topic2][sub_question][answer]",
-    rawData.step3["1.2.1"].radio
+    rawData.step3?.["1.2.1"]?.radio ?? ""
   );
   formData.append(
     "social_impact_assessment[topic3][question]",
@@ -105,7 +102,7 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
   );
   formData.append(
     "social_impact_assessment[topic3][answers]",
-    rawData.step3["2.1"].checkbox
+    JSON.stringify(rawData.step3["2.1"])
   );
   formData.append(
     "social_impact_assessment[topic3][sub_question][question]",
@@ -121,7 +118,7 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
   );
   formData.append(
     "social_impact_assessment[topic4][answer]",
-    rawData.step3["2.2"].checkbox
+    JSON.stringify(rawData.step3["2.2"])
   );
   formData.append(
     "social_impact_assessment[topic4][sub_question][question]",
@@ -145,7 +142,7 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
   );
   formData.append(
     "social_impact_assessment[topic6][answer]",
-    rawData.step3["2.3.1"].text
+    rawData.step3?.["2.3.1"]?.text ?? ""
   );
   formData.append(
     "social_impact_assessment[topic7][question]",
@@ -169,7 +166,7 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
   );
   formData.append(
     "social_impact_assessment[topic9][answer]",
-    rawData.step3["2.5"].radio
+    rawData.step3?.["2.5"]?.radio ?? ""
   );
   formData.append(
     "social_impact_assessment[topic10][question]",
@@ -177,7 +174,7 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
   );
   formData.append(
     "social_impact_assessment[topic10][answer]",
-    rawData.step3["2.5.1"].text
+    rawData.step3?.["2.5.1"]?.text ?? ""
   );
   formData.append(
     "social_impact_assessment[topic11][question]",
@@ -193,7 +190,7 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
   );
   formData.append(
     "social_impact_assessment[topic12][answer]",
-    rawData.step3["2.6.1"].radio
+    rawData.step3?.["2.6.1"]?.radio ?? ""
   );
   formData.append(
     "social_impact_assessment[topic13][question]",
@@ -201,7 +198,7 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
   );
   formData.append(
     "social_impact_assessment[topic13][answer]",
-    rawData.step3["3.1"].radio
+    JSON.stringify(rawData.step3["3.1"])
   );
   formData.append(
     "social_impact_assessment[topic14][question]",
@@ -209,7 +206,7 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
   );
   formData.append(
     "social_impact_assessment[topic14][answer]",
-    rawData.step3["3.1.1"].text
+    rawData.step3?.["3.1.1"]?.text ?? ""
   );
   formData.append(
     "social_impact_assessment[topic15][question]",
@@ -219,7 +216,6 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
 
   const requestOptions = {
     method: "POST",
-    headers: myHeaders,
     body: formData,
     redirect: "follow",
   };
@@ -229,11 +225,23 @@ export const submitSROIForm = async (uuid, email, rawData, file) => {
       `${import.meta.env.VITE_HOST_URL_TPLANET}/projects/sroi_feedback`,
       requestOptions
     );
-    const result = await response.text();
-    console.log(result);
-    return result;
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 400:
+          throw new Error("表單資料有誤，請檢查必填欄位是否都已填寫");
+        case 401:
+          throw new Error("未授權的請求，請重新登入");
+        case 403:
+          throw new Error("沒有權限執行此操作");
+        default:
+          throw new Error(`請求失敗 (${response.status})`);
+      }
+    }
+
+    return response;
   } catch (error) {
-    console.error("Error submitting SROI form:", error);
-    throw error;
+    console.error("提交表單時發生錯誤:", error);
+    throw error; // 將錯誤往上拋給組件處理
   }
 };

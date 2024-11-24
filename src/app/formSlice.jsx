@@ -49,10 +49,17 @@ export const FormDataSlice = createSlice({
     setStep3FormData: (state, action) => {
       state.step3 = action.payload;
     },
+    resetFormData: (state) => {
+      return initialState;
+    },
   },
 });
 
-export const { setStep1FormData, setStep2FormData, setStep3FormData } =
-  FormDataSlice.actions;
+export const {
+  setStep1FormData,
+  setStep2FormData,
+  setStep3FormData,
+  resetFormData,
+} = FormDataSlice.actions;
 
 export default FormDataSlice.reducer;

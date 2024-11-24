@@ -5,9 +5,10 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setStep3FormData } from "../../../app/formSlice";
+import { checkbox } from "@material-tailwind/react";
 
 export const SatisfactionRadioComponent = ({
   index,
@@ -15,10 +16,19 @@ export const SatisfactionRadioComponent = ({
   number,
   onRadioChange,
   onTextFieldChange,
+  value,
 }) => {
   const matches = useMediaQuery("(min-width:863px)");
-  const [radioValue, setRadioValue] = useState("");
-  const [textFieldValue, setTextFieldValue] = useState("");
+  const [radioValue, setRadioValue] = useState(value?.radio || "");
+  const [textFieldValue, setTextFieldValue] = useState(value?.textField || "");
+
+  // 當 value 改變時更新本地 state
+  useEffect(() => {
+    if (value) {
+      setRadioValue(value.radio || "");
+      setTextFieldValue(value.textField || "");
+    }
+  }, [value]);
 
   const handleRadioChange = (event) => {
     const newRadioValue = event.target.value;
@@ -139,27 +149,81 @@ export const ImpactRadioComponent = ({
           >
             {isCheck
               ? option.map((item, index) => (
-                  <FormControlLabel
-                    key={index}
-                    value={item}
-                    control={
-                      <Checkbox
-                        checked={(formData[subKey]?.checkbox || []).includes(
-                          item
-                        )}
-                        onChange={handleCheckboxChange}
+                  <div key={index} className="flex items-center gap-2">
+                    <FormControlLabel
+                      value={item}
+                      control={
+                        <Checkbox
+                          checked={(formData[subKey]?.checkbox || []).includes(
+                            item
+                          )}
+                          onChange={handleCheckboxChange}
+                        />
+                      }
+                      label={item}
+                    />
+                    {item === "其他" && (
+                      <TextField
+                        size="small"
+                        variant="standard"
+                        sx={{ width: "50%" }}
+                        value={formData[subKey]?.otherText || ""}
+                        onChange={(e) => {
+                          setFormData((prevValues) => ({
+                            ...prevValues,
+                            [subKey]: {
+                              ...prevValues[subKey],
+                              otherText: e.target.value,
+                            },
+                          }));
+                          dispatch(
+                            setStep3FormData({
+                              ...formData,
+                              [subKey]: {
+                                ...formData[subKey],
+                                otherText: e.target.value,
+                              },
+                            })
+                          );
+                        }}
                       />
-                    }
-                    label={item}
-                  />
+                    )}
+                  </div>
                 ))
               : option.map((item, index) => (
-                  <FormControlLabel
-                    key={index}
-                    value={item}
-                    control={<Radio />}
-                    label={item}
-                  />
+                  <div key={index} className="flex items-center gap-2">
+                    <FormControlLabel
+                      value={item}
+                      control={<Radio />}
+                      label={item}
+                    />
+                    {item === "其他" && (
+                      <TextField
+                        size="small"
+                        variant="standard"
+                        sx={{ width: "50%" }}
+                        value={formData[subKey]?.otherText || ""}
+                        onChange={(e) => {
+                          setFormData((prevValues) => ({
+                            ...prevValues,
+                            [subKey]: {
+                              ...prevValues[subKey],
+                              otherText: e.target.value,
+                            },
+                          }));
+                          dispatch(
+                            setStep3FormData({
+                              ...formData,
+                              [subKey]: {
+                                ...formData[subKey],
+                                otherText: e.target.value,
+                              },
+                            })
+                          );
+                        }}
+                      />
+                    )}
+                  </div>
                 ))}
           </RadioGroup>
         </div>
@@ -212,6 +276,10 @@ SatisfactionRadioComponent.propTypes = {
   number: PropTypes.string,
   onRadioChange: PropTypes.func,
   onTextFieldChange: PropTypes.func,
+  value: PropTypes.shape({
+    radio: PropTypes.string,
+    textField: PropTypes.string,
+  }),
 };
 
 ImpactRadioComponent.propTypes = {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import TextField from "@mui/material/TextField";
 import Radio from "@mui/material/Radio";
@@ -7,6 +7,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
+import { FormHelperText } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import {
   ImpactRadioComponent,
@@ -20,10 +21,11 @@ import {
   setStep3FormData,
 } from "../../../app/formSlice";
 
-export function Step1() {
+export function Step1({ onValidate }) {
   const Step1FormData = useSelector((state) => state.formdata.step1);
   const dispatch = useDispatch();
   const [formData, setFormData] = useState(Step1FormData);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,8 +41,30 @@ export function Step1() {
     );
   };
 
+  // 檢查必填欄位
+  useEffect(() => {
+    const newErrors = {};
+    let isValid = true;
+
+    if (!formData.name) {
+      newErrors.name = "姓名為必填";
+      isValid = false;
+    }
+    if (!formData.organization) {
+      newErrors.organization = "任職單位/代表單位為必填";
+      isValid = false;
+    }
+    if (!formData.gender) {
+      newErrors.gender = "性別為必選";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    onValidate?.(isValid);
+  }, [formData]);
+
   return (
-    <div className="w-11/12 md:w-4/5 mx-auto ">
+    <div className="w-11/12 md:w-4/5 mx-auto">
       <form className="flex flex-col gap-4">
         <div className="flex flex-col gap-2 border p-4 rounded-xl">
           <h3 className="min-w-[200px] mx-auto md:w-full">
@@ -71,6 +95,8 @@ export function Step1() {
             name="name"
             value={formData.name}
             onChange={handleChange}
+            error={Boolean(errors.name)}
+            helperText={errors.name}
           />
         </div>
         <div className="flex flex-col gap-2 border p-4 rounded-xl">
@@ -84,6 +110,8 @@ export function Step1() {
             name="organization"
             value={formData.organization}
             onChange={handleChange}
+            error={Boolean(errors.organization)}
+            helperText={errors.organization}
           />
         </div>
         <div className="flex flex-col gap-2 border p-4 rounded-xl">
@@ -104,6 +132,9 @@ export function Step1() {
             />
             <FormControlLabel value="male" control={<Radio />} label="Male" />
           </RadioGroup>
+          {errors.gender && (
+            <FormHelperText error>{errors.gender}</FormHelperText>
+          )}
         </div>
       </form>
     </div>
@@ -112,40 +143,64 @@ export function Step1() {
 
 const theme = createTheme();
 
-export function Step2() {
+export function Step2({ onValidate }) {
   const Step2FormData = useSelector((state) => state.formdata.step2);
   const dispatch = useDispatch();
   const [formData, setFormData] = useState(Step2FormData);
+  const [errors, setErrors] = useState({});
+
+  const questions = [
+    { index: "1", name: "主題" },
+    { index: "2", name: "時間" },
+    { index: "3", name: "地點" },
+    { index: "4", name: "餐飲" },
+    { index: "5", name: "流程與行政" },
+    { index: "6", name: "整體" },
+  ];
+
+  useEffect(() => {
+    if (Step2FormData) {
+      setFormData(Step2FormData);
+    }
+  }, [Step2FormData]);
 
   const handleSatisfactionRadioChange = (index, value) => {
-    setFormData((prevValues) => ({
-      ...prevValues,
-      [index]: { ...prevValues[index], radio: value },
-    }));
-    dispatch(
-      setStep2FormData({
-        ...formData,
-        [index]: { ...formData[index], radio: value },
-      })
-    );
+    const updatedFormData = {
+      ...formData,
+      [index]: { ...formData[index], radio: value },
+    };
+    setFormData(updatedFormData);
+    dispatch(setStep2FormData(updatedFormData));
   };
 
   const handleSatisfactionTextFieldChange = (index, value) => {
-    setFormData((prevValues) => ({
-      ...prevValues,
-      [index]: { ...prevValues[index], textField: value },
-    }));
-    dispatch(
-      setStep2FormData({
-        ...formData,
-        [index]: { ...formData[index], textField: value },
-      })
-    );
+    const updatedFormData = {
+      ...formData,
+      [index]: { ...formData[index], textField: value },
+    };
+    setFormData(updatedFormData);
+    dispatch(setStep2FormData(updatedFormData));
   };
+
+  // 檢查必填欄位
+  useEffect(() => {
+    const newErrors = {};
+    let isValid = true;
+
+    questions.forEach(({ index }) => {
+      if (!formData[index]?.radio) {
+        newErrors[`${index}.radio`] = "必填";
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    onValidate?.(isValid);
+  }, [formData]);
 
   return (
     <ThemeProvider theme={theme}>
-      <div className="w-full md:w-4/5 mx-auto ">
+      <div className="w-full md:w-4/5 mx-auto">
         <form className="flex flex-col gap-4">
           <div className="flex flex-col gap-2 border p-4 rounded-xl">
             <h3 className="min-w-[200px] mx-auto md:w-full">
@@ -153,58 +208,68 @@ export function Step2() {
             </h3>
             <p className="font-bold text-sm">滿意度調查問題</p>
           </div>
-          <SatisfactionRadioComponent
-            index="1"
-            name="主題"
-            number="【第一題】"
-            onRadioChange={handleSatisfactionRadioChange}
-            onTextFieldChange={handleSatisfactionTextFieldChange}
-          />
-          <SatisfactionRadioComponent
-            index="2"
-            name="時間"
-            number="【第二題】"
-            onRadioChange={handleSatisfactionRadioChange}
-            onTextFieldChange={handleSatisfactionTextFieldChange}
-          />
-          <SatisfactionRadioComponent
-            index="3"
-            name="地點"
-            number="【第三題】"
-            onRadioChange={handleSatisfactionRadioChange}
-            onTextFieldChange={handleSatisfactionTextFieldChange}
-          />
-          <SatisfactionRadioComponent
-            index="4"
-            name="餐飲"
-            number="【第四題】"
-            onRadioChange={handleSatisfactionRadioChange}
-            onTextFieldChange={handleSatisfactionTextFieldChange}
-          />
-          <SatisfactionRadioComponent
-            index="5"
-            name="流程與行政"
-            number="【第五題】"
-            onRadioChange={handleSatisfactionRadioChange}
-            onTextFieldChange={handleSatisfactionTextFieldChange}
-          />
-          <SatisfactionRadioComponent
-            index="6"
-            name="整體"
-            number="【第六題】"
-            onRadioChange={handleSatisfactionRadioChange}
-            onTextFieldChange={handleSatisfactionTextFieldChange}
-          />
+          {questions.map(({ index, name }) => (
+            <SatisfactionRadioComponent
+              key={index}
+              index={index}
+              name={name}
+              number={`【第${index}題】`}
+              error={errors[`${index}.radio`]}
+              formData={formData[index] || {}}
+              onRadioChange={handleSatisfactionRadioChange}
+              onTextFieldChange={handleSatisfactionTextFieldChange}
+              value={formData[index] || {}}
+            />
+          ))}
         </form>
       </div>
     </ThemeProvider>
   );
 }
 
-export function Step3({ setFile }) {
+export function Step3({ setFile, onValidate }) {
   const Step3FormData = useSelector((state) => state.formdata.step3);
   const [formData, setFormData] = useState(Step3FormData);
   const [fileName, setFileName] = useState("");
+  const [errors, setErrors] = useState({});
+
+  // 檢查必填欄位
+  useEffect(() => {
+    const requiredFields = {
+      1.1: "【經濟1-1】為必填",
+      1.2: "【經濟1-2】為必填",
+      2.1: "【社會2-1】為必填",
+      "2.1.1": "【社會2-1-1】為必填",
+      2.2: "【社會2-2】為必填",
+      "2.2.1": "【社會2-2-1】為必填",
+      2.3: "【社會2-3】為必填",
+      2.4: "【社會2-4】為必填",
+      "2.4.1": "【社會2-4-1】為必填",
+      2.6: "【社會2-6】為必填",
+      3.1: "【環境3-1】為必填",
+    };
+
+    const newErrors = {};
+    let isValid = true;
+
+    Object.keys(requiredFields).forEach((field) => {
+      if (
+        !formData[field] ||
+        (Array.isArray(formData[field]) && formData[field].length === 0)
+      ) {
+        newErrors[field] = requiredFields[field];
+        isValid = false;
+      }
+    });
+
+    if (!fileName) {
+      newErrors.file = "請上傳檔案";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    onValidate?.(isValid);
+  }, [formData, fileName]);
 
   const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -285,7 +350,7 @@ export function Step3({ setFile }) {
             "對於自身的工作有所啟發或幫助",
             "coffee break 或休息期間媒合到新的工作機會",
             "尋找到潛在的事業合作對象",
-            "其他：",
+            "其他",
           ]}
           isCheck={true}
           isRequire={true}
@@ -307,7 +372,7 @@ export function Step3({ setFile }) {
             "產官學研在AI與永續議題應用與發展",
             "AI應用與永續治理發展與應用",
             "科技賦能對於企業永續發展應用與成功案例",
-            "其他：",
+            "其他",
           ]}
           isCheck={true}
           isRequire={true}
@@ -402,7 +467,7 @@ export function Step3({ setFile }) {
             "無",
             "使用大眾交通工具/共乘",
             "進行淨灘/農廢棄物/海廢再利用",
-            "其他：",
+            "其他",
           ]}
           isCheck={false}
           isRequire={true}
@@ -436,6 +501,9 @@ export function Step3({ setFile }) {
               <VisuallyHiddenInput type="file" onChange={handleFileChange} />
             </Button>
             {fileName && <p className="mt-2 text-sm">{fileName}</p>}
+            {errors.file && (
+              <p className="text-red-500 text-sm mt-1">{errors.file}</p>
+            )}
           </div>
         </div>
       </form>
@@ -443,6 +511,15 @@ export function Step3({ setFile }) {
   );
 }
 
+Step1.propTypes = {
+  onValidate: PropTypes.func.isRequired,
+};
+
+Step2.propTypes = {
+  onValidate: PropTypes.func.isRequired,
+};
+
 Step3.propTypes = {
   setFile: PropTypes.func.isRequired,
+  onValidate: PropTypes.func.isRequired,
 };
