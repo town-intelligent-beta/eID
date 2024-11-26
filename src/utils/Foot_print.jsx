@@ -174,11 +174,11 @@ export const updateNodeData = async (baseNodes, baseLinks) => {
   return [baseNodes, baseLinks];
 };
 
-export const updateTableData = async () => {
+export async function updateTableData(setPersonalWeights, setProjectData) {
   let list_task_UUIDs = [];
   const str_list_task_UUIDs = localStorage.getItem("list_tasks");
 
-  if (str_list_task_UUIDs === "") {
+  if (!str_list_task_UUIDs) {
     try {
       const resultJSON = await getUserUuidTasks(localStorage.getItem("email"));
       list_task_UUIDs = resultJSON.uuid;
@@ -188,16 +188,16 @@ export const updateTableData = async () => {
     }
   } else {
     try {
-      list_task_UUIDs = str_list_task_UUIDs.split(",");
+      list_task_UUIDs = JSON.parse(str_list_task_UUIDs);
     } catch (error) {
       console.error("Error parsing task UUIDs:", error);
       return;
     }
   }
 
-  const list_child_tasks = await Promise.all(
-    list_task_UUIDs.map((taskUUID) => getChildTasks(taskUUID))
-  );
+  // const list_child_tasks = await Promise.all(
+  //   list_task_UUIDs.map((taskUUID) => getChildTasks(taskUUID))
+  // );
 
   // Project weight
   let projectWeight = {};
@@ -209,38 +209,53 @@ export const updateTableData = async () => {
 
     if (uuid_project && !list_uuid_project.includes(uuid_project)) {
       list_uuid_project.push(uuid_project);
-      const weight = getProjectWeight(taskUUID);
+      const weight = await getProjectWeight(taskUUID);
       projectWeight = addWeight(projectWeight, weight);
     }
   }
 
-  try {
-    for (let index = 1; index <= 27; index++) {
-      document.getElementById("project_s" + index).innerHTML =
-        projectWeight["sdgs-" + index] || 0;
-    }
-  } catch (error) {
-    console.error("Error updating project weights:", error);
+  const newProjectWeights = {};
+  for (let index = 1; index <= 27; index++) {
+    newProjectWeights[index] = projectWeight[`sdgs-${index}`] || 0;
   }
+  setProjectData(newProjectWeights);
 
   // Personal
   try {
     const uuid_target = localStorage.getItem("target");
-    if (uuid_target === "") return;
+    if (!uuid_target) return;
 
     const obj_target = JSON.parse(localStorage.getItem(uuid_target));
     const obj_ticket = obj_target.ticket;
 
+    const newPersonalWeights = {};
     for (let index = 1; index <= 27; index++) {
-      if (obj_ticket["s" + index] !== "1") continue;
-      document.getElementById("person_s" + index).innerHTML = (
-        parseInt(document.getElementById("person_s" + index).innerHTML) +
-        parseInt(obj_ticket["s" + index])
+      if (obj_ticket[`s${index}`] !== "1") continue;
+      newPersonalWeights[index] = (
+        parseInt(newPersonalWeights[index] || 0) +
+        parseInt(obj_ticket[`s${index}`])
       ).toString();
     }
+
+    const personalWeightsArray = updatePersonalWeights(newPersonalWeights);
+    setPersonalWeights(personalWeightsArray);
   } catch (error) {
     console.error("Error updating personal weights:", error);
   }
+}
+
+export const updatePersonalWeights = (newPersonalWeights) => {
+  if (!newPersonalWeights || typeof newPersonalWeights !== "object") {
+    throw new TypeError("newPersonalWeights must be a valid object");
+  }
+
+  const personalWeightsArray = Array(27).fill(0);
+  Object.keys(newPersonalWeights).forEach((key) => {
+    const index = parseInt(key, 10) - 1;
+    personalWeightsArray[index] = newPersonalWeights[key];
+  });
+
+  return personalWeightsArray;
 };
 
 export const getProjectWeight = async (uuid_task) => {

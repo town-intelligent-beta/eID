@@ -46,6 +46,7 @@ export default function ActivityParticipation() {
     };
 
     fetchTaskDescription();
+    localStorage.setItem("target", id);
   }, [id]);
 
   // 上傳圖片
