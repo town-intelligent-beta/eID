@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { updateTableData } from "../../utils/Foot_print";
+import SdgBarChart from "../../utils/chart/Bar";
 
 export default function FootPrint() {
   const [images, setImages] = useState({});
@@ -33,13 +34,10 @@ export default function FootPrint() {
   };
 
   return (
-    <div className="container-fluid min-vh-100">
-      <div className="row justify-content-center mt-4">
-        <div className="col-md-5 col-12 mb-5">
-          <div
-            className="border p-2"
-            style={{ height: "300px", overflowY: "scroll" }}
-          >
+    <div className="">
+      <div className="row justify-content-center mt-4 mb-5">
+        <div className="col-md-5 col-12">
+          <div className="border p-2 h-80 overflow-y-scroll">
             <table className="table table-striped">
               <thead>
                 <tr>
@@ -76,12 +74,23 @@ export default function FootPrint() {
               </tbody>
             </table>
           </div>
-          <p className="mt-2 mb-0" style={{ fontSize: "12px" }}>
-            個人 : 個人參與永續合作貢獻的權重。
-          </p>
-          <p className="mb-0" style={{ fontSize: "12px" }}>
-            專案 : 全體參與者於永續合作中累積的權重。
-          </p>
+          <p className="mt-2 text-xs">個人 : 個人參與永續合作貢獻的權重。</p>
+          <p className="text-xs">專案 : 全體參與者於永續合作中累積的權重。</p>
+        </div>
+        <div className="col-md-7 col-12">
+          <div className="text-start">
+            <div className="chart-container h-96">
+              <SdgBarChart
+                data={projectData}
+                title="永續指標"
+                canvasStyle={{
+                  height: "500px",
+                  borderRadius: "10px",
+                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
