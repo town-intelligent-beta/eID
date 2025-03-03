@@ -81,7 +81,7 @@ export default function Signin() {
         localStorage.setItem("username", result.username);
         localStorage.setItem("email", email);
         await fetchAvatarImg();
-        navigate("/eid");
+        navigate("/eid/about");
       }
     } catch (error) {
       console.error("提交表單時發生錯誤:", error);
