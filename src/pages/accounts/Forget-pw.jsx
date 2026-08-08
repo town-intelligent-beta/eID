@@ -4,17 +4,16 @@ export default function ForgetPw() {
   const [email, setEmail] = useState("");
 
   const forgotPassword = async (email) => {
-    const dataJSON = { email };
+    const formdata = new FormData();
+    formdata.append("email", email);
 
     try {
       const response = await fetch(
         `${import.meta.env.VITE_HOST_URL_EID}/accounts/forgot_password`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dataJSON),
+          body: formdata,
+          credentials: "include",
         }
       );
 

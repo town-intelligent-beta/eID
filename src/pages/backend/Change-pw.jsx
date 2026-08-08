@@ -15,16 +15,14 @@ const ChangePassword = () => {
     }
   }, [currentPassword, newPassword, confirmPassword]);
 
-  const changePassword = async (dataJSON) => {
+  const changePassword = async (formdata) => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_HOST_URL_EID}/accounts/modify`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dataJSON),
+          body: formdata,
+          credentials: "include",
         }
       );
 
@@ -33,7 +31,6 @@ const ChangePassword = () => {
       }
 
       const resultJSON = await response.json();
-      //setResult(resultJSON);
       return resultJSON;
     } catch (error) {
       console.error("Error changing password:", error);
@@ -54,13 +51,12 @@ const ChangePassword = () => {
       return;
     }
 
-    const dataJSON = {
-      email: localStorage.getItem("email"),
-      username: localStorage.getItem("username"),
-      password: newPassword,
-    };
+    const formdata = new FormData();
+    formdata.append("email", localStorage.getItem("email"));
+    formdata.append("username", localStorage.getItem("username"));
+    formdata.append("password", newPassword);
 
-    const result = await changePassword(dataJSON);
+    const result = await changePassword(formdata);
     if (result) {
       console.log("Password changed successfully:", result);
       alert("變更密碼成功");
